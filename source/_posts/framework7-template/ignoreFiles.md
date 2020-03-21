@@ -1,5 +1,5 @@
 ---
-title: Configure .gitignore and .npmignore files
+title: Configure gitignore and npmignore files
 toc: true
 date: 2020-03-24 19:04:47
 tags:

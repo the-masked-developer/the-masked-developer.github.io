@@ -1,5 +1,5 @@
 ---
-title: Configure .eslintrc file
+title: Configure eslintrc file
 toc: true
 date: 2020-03-19 19:04:47
 tags:

@@ -42,13 +42,21 @@ After you added a new language file, the development server should be restarted.
 
 ## Usage
 
-In templates:
-- `{{$lang('emailSubject')}}`
-- `{{$lang('emailBody', {username: 'Bugs Bunny'})`
+In templates: 
+```
+{{$lang('emailSubject')}}
+```
+```
+{{$lang('emailBody', {username: 'Bugs Bunny'})
+```
 
 In scripts:
-- `this.$lang('emailSubject')`
-- `this.$lang('emailBody', {username: 'Bugs Bunny'})`
+```
+this.$lang('emailSubject')
+```
+```
+this.$lang('emailBody', {username: 'Bugs Bunny'})
+```
 
 ## Default language
 

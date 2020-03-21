@@ -1,5 +1,5 @@
 ---
-title: Configure .editorconfig file
+title: Configure editorconfig file
 toc: true
 date: 2020-03-18 19:04:47
 tags:

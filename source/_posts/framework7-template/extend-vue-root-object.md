@@ -1,5 +1,5 @@
 ---
-title: Extend the Vue / Framework7 root object
+title: Extend the Vue
 toc: true
 date: 2020-03-20 19:04:47
 tags:

@@ -1,7 +1,7 @@
 ---
 title: Global data object
 toc: true
-date: 2020-03-09 19:04:47
+date: 2020-03-09 13:04:47
 tags:
 	- Framework7
 categories:
@@ -12,7 +12,7 @@ categories:
 
 > This page is part of the [App Framework Documentation](../DOCUMENTATION.md)
 
-<br />
+
 
 App Framework provides a global persistent data object for common used data or settings.
 
@@ -20,23 +20,30 @@ The data object will be restored on each application reload and is accessible in
 
 ## With App Framework v1.13.2 or later
 
-**Save data**
+### Save data
 - Template: `<f7-button @click="$db('main.sub', 'value')">Save data</f7-button>`
 - Script: `this.$db('main.sub', 'value')`
 
-**Get data**
-- Template: `{{$db('main.sub')}}`
-- Script: `this.$db('main.sub')`
+### Get data
+- Template: 
+```
+{{$db('main.sub')}}
+```
 
-**Remove data**
+- Script: 
+```
+this.$db('main.sub')
+```
+
+### Remove data
 - Template: `<f7-button @click="$db('main.sub', null)">Remove data</f7-button>`
 - Script: `this.$db('main.sub', null)`
 
-**Notes**
+### Notes
 
 `main.sub` mean the paths within the data object. With a point, you can realize nested objects. Example:
 
-```
+```json
 {
   "main": {
     "sub": "value"
@@ -69,7 +76,7 @@ The data object will be restored on each application reload and is accessible in
 
 The *path* must be a string, use a a point to nest data. Example:
 
-```
+```js
 created: function () {
   this.$root.saveData('greeting', 'Hello!')
   this.$root.saveData('names', {first: 'Jan', second: 'Tom', third: 'Sophie'})
@@ -79,7 +86,7 @@ created: function () {
 
 Now, the data object will look like following:
 
-```
+```json
 {
   greeting: 'Hello!',
   names: {
@@ -91,7 +98,7 @@ Now, the data object will look like following:
 
 Example for the usage in templates:
 
-```
+```html
 <f7-block>
   <p>UTC date: {{$root.data.dateString}}</p>
   <f7-buttons>
