@@ -126,7 +126,7 @@ Class01 : int gorilla
 Class08 <--> C2: Cool label
 ```
 
-### 便签
+### note
 
 {% note info %}
 Info `markdown`
