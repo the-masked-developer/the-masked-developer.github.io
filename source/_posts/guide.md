@@ -8,6 +8,7 @@ tags:
 math: true
 mermaid: true
 sticky: 100
+author: maskman
 ---
 
 ## 글 작성 가이드
