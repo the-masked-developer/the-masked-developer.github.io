@@ -3,6 +3,7 @@ title: Supervisord 찍어먹기
 toc: true
 date: 2021-11-09 23:05:19
 tags:
+  - test
 category: 프로그래밍
 author: 이민혁
 ---
@@ -19,6 +20,7 @@ supervisord 또는 supervisordctl command 는 기본적으로 다음과 같은 �
 - /etc/supervisor/supervisord.conf (since Supervisor 3.3.0)
 
 우선 다음과 같이 예제 어플리케이션을 생성했다.
+
 ```python
 #!/usr/bin/env python3
 from time import sleep
@@ -44,7 +46,8 @@ services:
 ```
 
 실행 할 경우.
-```
+
+```bash
 ~/Dropbox/box/demos/supervisord master* ⇣⇡ ❯ dc up
 Starting supervisord_app_1 ... done
 Attaching to supervisord_app_1
@@ -73,6 +76,7 @@ supervisord_app_1 exited with code 0
 
 supervisor 는 python 으로 구현되어 있으므로 pip 로 설치한다. 그러므로 Dockerfile 을 생성하고 
 설치하도록 했다. (버퍼를 꺼줘야 컨테이너 로그가 바로 보인다.)
+
 ```dockerfile
 FROM python:latest
 
@@ -101,37 +105,5 @@ services:
 ```
                                                                 
 이제 다시 실행할 경우 app 의 로그는 보이지 않지만 정상적으로 종료되었음을 알 수 있다. 
-```
-app_1  | /usr/lib/python3/dist-packages/supervisor/options.py:474: UserWarning: Supervisord is running as root and it is searching for its configuration file in default locations (including its current working directory); you probably want to specify a "-c" argument specifying an absolute path to a configuration file for improved security.
-app_1  |   self.warnings.warn(
-app_1  | 2021-09-01 10:01:47,610 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
-app_1  | 2021-09-01 10:01:47,613 INFO supervisord started with pid 1
-app_1  | 2021-09-01 10:01:48,616 INFO spawned: 'app' with pid 8
-app_1  | 2021-09-01 10:01:49,707 INFO success: app entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
-app_1  | 2021-09-01 10:01:51,714 INFO exited: app (exit status 0; expected)
-```
-
-로그는 stdout_logfile 을 통해서 std 또는 file 에 쓰면 된다.
-
-```dosini
-[supervisord]
-  stdout_logfile=/dev/stdout        ; stdout log path, NONE for none; default AUTO
-  stdout_logfile_maxbytes=0   ; max # logfile bytes b4 rotation (default 50MB)
-```
-
-program 의 auturestart 의 기본값은 unexpected 로써 exit code 0 이 아닌 경우 재시작한다. 그러므로 
-app.py 에서 sys.exit(1) 로 비정상 종료 코드를 내보낸다면 supervisord 가 프로세스를 재시작해준다.
-
-```
-app_1  | 2021-09-01 12:09:11,750 INFO spawned: 'app' with pid 1819
-app_1  | Starting application...
-app_1  | [0] working...
-^[app_1  | 2021-09-01 12:09:12,783 INFO success: app entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
-app_1  | [1] working...
-app_1  | [2] working...
-
-app_1  | 2021-09-01 12:09:14,862 INFO exited: app (exit status 1; not expected)
-app_1  | 2021-09-01 12:09:15,869 INFO spawned: 'app' with pid 1820
-```
 
 
