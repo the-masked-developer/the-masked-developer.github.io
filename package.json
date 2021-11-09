@@ -6,7 +6,7 @@
     "deploy": "git add --all && git commit -m \"write document\" && git push -u origin writing && hexo d -g"
   },
   "hexo": {
-    "version": "3.9.0"
+    "version": "5.4.0"
   },
   "dependencies": {
     "hexo": "^3.9.0",
