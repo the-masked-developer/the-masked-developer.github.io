@@ -15,6 +15,8 @@ author: maskman
 
 사용할 수 있는 마크다운 문법 및 추가적인 플러그인 사용법에 관해서 기술
 
+<!-- more -->
+
 emphasis: `keyword`
 
 highlight.js

@@ -3,7 +3,7 @@
 ### 클론
 
 ```bash
-git clone https://github.com/vue-guide/vue-guide.github.io.git
+git clone https://github.com/the-masked-developer/the-masked-developer.github.io.git
 ```
 
 ### 브랜치 변경(writing)
@@ -27,4 +27,3 @@ npm install
 ```bash
 npm run deploy
 ```
-
