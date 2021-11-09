@@ -27,3 +27,9 @@ npm install
 ```bash
 npm run deploy
 ```
+
+### 로컬 테스트
+
+```bash
+./node_modules/.bin/hexo serve
+```
