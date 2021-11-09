@@ -1,6 +1,10 @@
 ## Prequisition
 
-* Node 12
+- Node 12
+
+```bash
+sudo n 12
+```
 
 ## Quick Start
 

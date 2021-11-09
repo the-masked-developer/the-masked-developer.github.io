@@ -2,8 +2,7 @@
 ## Docs: https://hexo.io/docs/configuration.html
 ## Source: https://github.com/hexojs/hexo/
 
-# Site
-title: 복면 개발왕
+# Site title: 복면 개발왕
 subtitle: For Memory
 description: For Memory
 keywords: Dev
@@ -118,5 +117,5 @@ sitemap:
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://github.com/the-masked-developer/the-masked-developer.github.io.git
+  repo: https://x-access-token:__GITHUB_TOKEN__@github.com/the-masked-developer/the-masked-developer.github.io.git
   branch: master
