@@ -1,3 +1,7 @@
+## Prequisition
+
+* Node 12
+
 ## Quick Start
 
 ### 클론
