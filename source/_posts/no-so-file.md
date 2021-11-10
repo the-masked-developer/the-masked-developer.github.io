@@ -1,6 +1,6 @@
 ---
 title: 리눅스에서 무슨무슨 so 파일이 없다고 할 때
-date: 2021-11-09 22:22:22
+date: 2021-03-09 22:22:22
 index_img:
 category: 글쓰기
 tags:
