@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "deploy": "git add --all && git commit -m \"write document\" && git push -u origin writing && hexo d -g"
+    "deploy": "git add --all && git commit -m \"write document\" && git push -u origin writing && hexo d -g",
+    "serve": "./node_modules/.bin/hexo serve"
   },
   "hexo": {
     "version": "5.4.0"
