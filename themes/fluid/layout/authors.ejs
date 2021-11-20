@@ -1,0 +1,78 @@
+<%
+page.layout = "authors"
+page.title = theme.authors.title || __('author.title')
+page.subtitle = theme.authors.subtitle || __('author.subtitle')
+page.banner_img = theme.category.banner_img
+page.banner_img_height = theme.category.banner_img_height
+page.banner_mask_alpha = theme.category.banner_mask_alpha
+
+var orderBy = theme.category.order_by || 'name'
+%>
+
+<% function render_authors(cats, depth) { %>
+  <% depth = depth || 0 %>
+  <% return cats.forEach((cat) => { %>
+    <% var collapsed = true %>
+    <div class="<%= depth <= 0 ? 'category' : 'category-sub' %> row">
+      <a
+        class="<%= depth <= 0 ? 'category-item' : 'category-subitem' %> <%= collapsed ? 'collapsed' : '' %> list-group-item category-item-action col-10 col-md-11"
+        id="heading-<%= md5(cat.name) %>" role="tab" data-toggle="collapse" href="#collapse-<%= md5(cat.name) %>"
+        aria-expanded="<%= collapsed ? 'false' : 'true' %>"
+      >
+        <%= cat.name %>
+        <i class="iconfont icon-arrowright"></i>
+      </a>
+      <a href="<%= url_for(cat.path) %>" class="category-count col-2 col-md-1">
+        <i class="iconfont icon-articles"></i>
+        <span><%= cat.posts.length %></span>
+      </a>
+      <div class="category-collapse collapse" id="collapse-<%= md5(cat.name) %>" role="tabpanel" aria-labelledby="heading-<%= md5(cat.name) %>">
+        <% var posts = cat.posts %>
+        
+        <% var filteredPosts = posts.filter((p) => {
+          return p.categories.filter(catOnPost => catOnPost.parent === cat._id).length === 0;
+        }) %>        
+        <%- render_posts(filteredPosts, cat) %>
+      </div>
+    </div>
+  <% }) %>
+<% } %>
+
+<% function render_posts(posts, cat) { %>
+  <div class="category-post-list">
+    <% var limit = theme.category.post_limit %>
+    <% for (var idx = 0; idx < posts.length; idx++) { %>
+      <% var post = posts[idx] %>
+      <% if (idx && limit && idx >= limit) { %>
+        <a href="<%= url_for(cat.path) %>" class="list-group-item list-group-item-action">
+          <span class="category-post">More...</span>
+        </a>
+        <% break %>
+      <% } else { %>
+        <a href="<%= url_for(post.path) %>" class="list-group-item list-group-item-action">
+          <span class="category-post"><%= post.title %></span>
+        </a>
+      <% } %>
+    <% } %>
+  </div>
+<% } %>
+
+<div class="category-list">
+  <% cats = site.categories.find({parent: {$exists: false}}).sort(orderBy).filter(cat => cat.length) %>
+  <% console.log('cats: ', cats.data) %>
+  <% var authors = [...new Set(site.posts.data.map(post => post.author))].filter(author => author) %>
+  <% var auts = authors.map(author => {
+    var postByAuthor = site.posts.data.filter(post => {
+      return post.author === author
+    });
+    return {
+      name: author,
+      _id: encodeURIComponent(author),
+      path: `authors/${author}`,
+      posts: postByAuthor,
+      length: postByAuthor.length
+    }
+  })
+  %>
+  <%- render_authors(auts) %>
+</div>

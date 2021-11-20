@@ -313,8 +313,13 @@ navbar:
         link: "/categories/",
         icon: "iconfont icon-category-fill",
       }
+    - {
+      key: "author",
+      link: "/authors/",
+      icon: "iconfont icon-users",
+    }
     - { key: "tag", link: "/tags/", icon: "iconfont icon-tags-fill" }
-    - { key: "about", link: "/about/", icon: "iconfont icon-user-fill" }
+    - { key: "about", link: "/about/", icon: "iconfont icon-plan" }
     #- { key: "links", link: "/links/", icon: "iconfont icon-link-fill" }
 
 # 搜索功能，基于 hexo-generator-search 插件，若已安装其他搜索插件请关闭此功能，以避免生成多余的索引文件
@@ -939,7 +944,15 @@ links:
     # The specified plugin needs to set the necessary parameters at the same time
     # Options: utterances | disqus | gitalk | valine | waline | changyan | livere | remark42 | twikoo | cusdis
     type: utterances
-
+#---------------------------
+# 저자
+#---------------------------
+authors:
+  enable: true
+  banner_img: /img/bg.jpeg
+  banner_img_height: 85
+  banner_mask_alpha: 0.3
+  subtitle: "저자"
 #---------------------------
 # 以下是配置 JS CSS 等静态资源的 URL 前缀，可以自定义成 CDN 地址，
 # 默认的 jsDelivr CDN 可能在部分地区无法访问，如果需要修改，最好使用与默认配置相同的版本，以避免潜在的问题，

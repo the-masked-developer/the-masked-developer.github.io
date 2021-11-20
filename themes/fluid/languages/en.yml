@@ -17,23 +17,23 @@ post:
   next: Next
 
 home:
-  title: Home
+  title: 메인
 
 archive:
-  title: Archives
+  title: 타임라인
   subtitle: Archive
 
 tag:
-  title: Tags
-  subtitle: Tag
+  title: 태그
+  subtitle: 태그
 
 category:
-  title: Categories
-  subtitle: Category
+  title: 카테고리
+  subtitle: 카테고리
 
 about:
-  title: About
-  subtitle: About
+  title: 블로그 역사
+  subtitle: 블로그 역사
 
 page404:
   title: Page not found
@@ -42,3 +42,7 @@ page404:
 links:
   title: Links
   subtitle: Links
+
+author:
+  title: 저자
+  subtitle: 저자

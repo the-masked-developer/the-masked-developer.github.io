@@ -50,3 +50,14 @@ hexo.extend.generator.register('_links', function(locals) {
     };
   }
 });
+
+// generate authors page
+hexo.extend.generator.register('_authors', function(locals) {
+  if (this.theme.config.links.enable !== false) {
+    return {
+      path  : 'authors/index.html',
+      data  : locals.theme,
+      layout: 'authors'
+    };
+  }
+});
