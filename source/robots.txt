@@ -8,3 +8,5 @@ Disallow: /css/
 Disallow: /vendor/
 Disallow: /content.json
 Disallow: /404.html
+
+Sitemap: https://the-masked-developer.github.io/sitemap.xml

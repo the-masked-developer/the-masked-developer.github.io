@@ -26,6 +26,7 @@ if (page.description) {
   <meta name="description" content="<%= description %>">
   <meta name="author" content="<%= page.author || config.author %>">
   <meta name="keywords" content="<%= keywords %>">
+  <link rel="alternate" href="/atom.xml" title="<%= config.title %>" type="application/atom+xml">
   <%- open_graph(theme.open_graph || {}) %>
   <% if (theme.custom_head) { %>
     <%- theme.custom_head %>
