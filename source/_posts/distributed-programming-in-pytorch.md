@@ -1,6 +1,6 @@
 ---
 title: Distributed Programming in PyTorch
-date: 2021-11-16 23:04:10
+date: 2021-11-30 22:22:10
 toc: true
 category: 프로그래밍
 tags:
