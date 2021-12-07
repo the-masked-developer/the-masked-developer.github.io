@@ -2,13 +2,13 @@
 title: CORS 이해하기
 date: 2021-03-09 22:22:22
 index_img:
-category: 글쓰기
+category: web
 tags:
-  - 글쓰기
+  - web
 math: true
 mermaid: true
 sticky: 100
-author: maskman
+author: seonjl
 ---
 
 ### CORS 란

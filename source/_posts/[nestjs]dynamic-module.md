@@ -2,13 +2,13 @@
 title: NestJS dynamic module 직접 만들어보기
 date: 2021-11-12 19:00:22
 index_img:
-category: 글쓰기
+category: nodejs
 tags:
-  - 글쓰기
+  - nestjs
 math: true
 mermaid: true
 sticky: 100
-author: maskman
+author: seonjl
 ---
 ### 소개
 
