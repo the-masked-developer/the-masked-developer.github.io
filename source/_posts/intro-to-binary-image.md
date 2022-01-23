@@ -45,4 +45,4 @@ Color histogram을 이용하여 threshold를 정하는 방법은 이미지에서
 
 이후 문서에서 위 세 가지 정보를 추출하는 방법에 대해 다루고자 한다.
 
-- [Binary Image Processing (Geometric Information)](https://the-masked-developer.github.io/wiki/binary-image-geometric-processing)
+- [Binary Image Processing (Geometric Information)](https://the-masked-developer.github.io/wiki/binary-image-geometric-process/)
