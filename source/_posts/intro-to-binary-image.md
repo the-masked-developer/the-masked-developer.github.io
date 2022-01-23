@@ -1,7 +1,7 @@
 ---
 title: Intro to Binary Images
 date: 2022-01-23 12:22:22
-index_img:
+toc: true
 category: Computer Vision
 tags:
     - Computer Vision
@@ -17,8 +17,6 @@ author: wayexists02
 바이너리 이미지란, 한개 또는 두 개의 숫자로만 이미지 값으로 존재하는 이미지를 말한다. 흔히, 완전 흰색과 완전 흑색으로만 구성되기도 한다. 바이너리 이미지는 다루기 쉬우면서도 이미지로부터 추출할 수 있는 매우 강건한 특징(feature)중 하나이다. 바이너리 이미지를 일단 얻게 되면, 이미지를 segmentation 하거나 분류하는 등의 작업을 수행할 수 있다.
 
 # Binary Images
-
-
 
 바이너리 이미지는 하나 또는 두 개의 값(보통 0과 1)으로 구성된 이미지이다.
 

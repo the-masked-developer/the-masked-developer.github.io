@@ -1,7 +1,7 @@
 ---
 title: Binary Image Processing (Geometric Information)
 date: 2022-01-23 12:23:22
-index_img:
+toc: true
 category: Computer Vision
 tags:
     - Computer Vision
