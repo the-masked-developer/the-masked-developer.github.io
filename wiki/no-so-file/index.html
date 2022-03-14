@@ -1,0 +1,566 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="For Memory">
+  <meta name="author" content="seonjl">
+  <meta name="keywords" content="Dev">
+  <link rel="alternate" href="/atom.xml" title="복면 개발왕" type="application/atom+xml">
+  <meta name="description" content="발단 nodejs 에서 oracledb 클라이언트를 다운받아 사용하려고 하면 항상 만나는 에러메시지가 있다. 123문제가 있으니이걸 보고 해결하시오https:&#x2F;&#x2F;oracle.github.io&#x2F;node-oracledb&#x2F;INSTALL.html#overview  나는 이러한 에러를 만났다. 12libclntsh.so: cannot open shared objec">
+<meta property="og:type" content="article">
+<meta property="og:title" content="리눅스에서 무슨무슨 so 파일이 없다고 할 때">
+<meta property="og:url" content="https://the-masked-developer.github.io/wiki/no-so-file/index.html">
+<meta property="og:site_name" content="복면 개발왕">
+<meta property="og:description" content="발단 nodejs 에서 oracledb 클라이언트를 다운받아 사용하려고 하면 항상 만나는 에러메시지가 있다. 123문제가 있으니이걸 보고 해결하시오https:&#x2F;&#x2F;oracle.github.io&#x2F;node-oracledb&#x2F;INSTALL.html#overview  나는 이러한 에러를 만났다. 12libclntsh.so: cannot open shared objec">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-03-09T13:22:22.000Z">
+<meta property="article:modified_time" content="2022-03-14T12:30:08.180Z">
+<meta property="article:author" content="maskking">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>리눅스에서 무슨무슨 so 파일이 없다고 할 때 - 복면 개발왕</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"the-masked-developer.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>복면 개발왕</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                메인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                타임라인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                카테고리
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/authors/">
+                <i class="iconfont icon-users"></i>
+                저자
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                태그
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-plan"></i>
+                블로그 역사
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/bg.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="리눅스에서 무슨무슨 so 파일이 없다고 할 때">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-author" aria-hidden="true"></i>
+    seonjl
+  </span>
+   
+  <span class="post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2021-03-09 22:22" pubdate>
+      March 9, 2021 pm
+    </time>
+  </span>
+  
+</div>
+
+<div class="mt-1">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-chart"></i>
+    1.2k 글자
+  </span>
+   
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-clock-fill"></i>
+      4 분
+  </span>
+    
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">리눅스에서 무슨무슨 so 파일이 없다고 할 때</h1>
+            
+            <div class="markdown-body">
+              <h3 id="발단"><a href="#발단" class="headerlink" title="발단"></a>발단</h3><hr>
+<p>nodejs 에서 oracledb 클라이언트를 다운받아 사용하려고 하면 항상 만나는 에러메시지가 있다.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">문제가 있으니<br>이걸 보고 해결하시오<br>https://oracle.github.io/node-oracledb/INSTALL.html<span class="hljs-comment">#overview</span><br></code></pre></td></tr></table></figure>
+
+<p>나는 이러한 에러를 만났다.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">libclntsh.so: cannot open shared object file: No such file or directory<br>libaio.so.1: cannot open shared object file: No such file or directory<br></code></pre></td></tr></table></figure>
+
+<p>so 파일은 shared object 파일이란 뜻으로 특정한 기능을 구현해 놓은 라이브러리 파일이다.</p>
+<p>즉 내 컴퓨터에 저 파일이 없어서 오라클 클라이언트를 사용할 수 없다고 하는 문제인 것이다.</p>
+<p>파일을 다운로드해서, 리눅스에서 라이브러리를 로딩하려면</p>
+<p><strong><em>ldconfig</em></strong> 라는 명령어를 사용해서, </p>
+<p>/etc/ld.so.conf 파일에 설정된 라이브러리 정보를<br>/etc/ld.so.cache 파일로 만들어 준후</p>
+<p>리눅스에 로더 가 라이브러리를 찾아 사용할 수 있도록 해주면 된다.</p>
+<h3 id="해결"><a href="#해결" class="headerlink" title="해결"></a>해결</h3><hr>
+<div class="note note-info">
+            <p>💡 리눅스는 so 파일을 아래와 같은 순서로 찾는다</p><ol><li>system default 경로</li><li>LD_LIBRARY_PATH</li><li>binary code 에 hard-coding 된 경로</li></ol>
+          </div>
+
+<p>시스템 디폴트 경로에 so 파일을 등록하는 방법을 알아보자.</p>
+<p><strong>1. system default 경로</strong></p>
+<p>이 값은 /etc/ld.so.conf 파일에 설정이 된 값이다. (일반적으로 /usr/local/bin 과 /usr/bin 이다)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ more /etc/ld.so.conf<br>include /etc/ld.so.conf.d/*conf<br></code></pre></td></tr></table></figure>
+
+<p> /etc/ld.so.conf.d/*conf 에 해당하는 모든 파일의 내용을 포함하고 있다.</p>
+<p>새로운 라이브러리를 리눅스에 등록하고 싶다면,<br>추가할 라이브러리 파일의 경로를 저장한 파일을<br>위와 같은 파일 이름 형식으로 만들어 위 경로에 저장해 주면 된다.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ ls -al /usr/lib/oracle/19.6/client64/lib<br>libclntsh.so<br>lib~~~<br>lib~~~<br>lib~~~<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># /etc/ld.so.conf.d/oracle.conf</span><br>/usr/lib/oracle/19.6/client64/lib<br></code></pre></td></tr></table></figure>
+
+<p>원하는 버전의 오라클 클라이언트를 위 경로에 다운 받은 후,</p>
+<p>위와 같은 파일을 만들어 경로를 등록 해 준후 <strong><em>ldconfig</em></strong> 명령어로 등록하면 사용할 수 있다</p>
+<p>+) libaio1 은 아래와같이 패키지매니저로 설치해 줄 수 있다. </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt-get install libaio1<br></code></pre></td></tr></table></figure>
+
+<p>++) 라이브러리 파일에 실행권한이 있냐 없냐 여부는 상관이 없는것 같다.</p>
+<p>+++) 라이브러리 파일이 심볼릭 링크인지 여부는 당연히 상관이 없다.</p>
+<h3 id="참고한-자료들"><a href="#참고한-자료들" class="headerlink" title="참고한 자료들"></a>참고한 자료들</h3><hr>
+<p><a target="_blank" rel="noopener" href="https://adnoctum.tistory.com/541">리눅스에서 무슨무슨 so 파일이 없다고 할 때</a><br><a target="_blank" rel="noopener" href="https://jacking75.github.io/Linux_lib_setting/">C++ - [펌] Linux에서 라이브러리 로딩</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/linux/">linux</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/linux/">linux</a>
+                    
+                  </div>
+                
+              </div>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/wiki/cors/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">CORS 이해하기</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'the-masked-developer/the-masked-developer.github.io');
+      s.setAttribute('issue-term', 'title');
+      
+      s.setAttribute('label', 'comment');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+    
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        loader: {
+          load: ['ui/lazy']
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js" ></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({"theme":"default"});
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
