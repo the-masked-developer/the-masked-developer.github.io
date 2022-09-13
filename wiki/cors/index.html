@@ -1,0 +1,591 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="For Memory">
+  <meta name="author" content="seonjl">
+  <meta name="keywords" content="Dev">
+  <link rel="alternate" href="/atom.xml" title="복면 개발왕" type="application/atom+xml">
+  <meta name="description" content="CORS 란교차 출처 리소스 공유 ( Cross-Origin Resource Sharing) 을 의미한다. 여기서 출처 ( Origin ) 이란 https:&#x2F;&#x2F;api.server.com&#x2F;blah&#x2F;blah  와 같은 URL 에서 프로토콜 + 호스트 + 포트 를 전부 합친 서버의 위치, 리소스의 출처를 의미한다 포트는 기본 프로토콜 포트번호가 정해져 있기 때문">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CORS 이해하기">
+<meta property="og:url" content="https://the-masked-developer.github.io/wiki/cors/index.html">
+<meta property="og:site_name" content="복면 개발왕">
+<meta property="og:description" content="CORS 란교차 출처 리소스 공유 ( Cross-Origin Resource Sharing) 을 의미한다. 여기서 출처 ( Origin ) 이란 https:&#x2F;&#x2F;api.server.com&#x2F;blah&#x2F;blah  와 같은 URL 에서 프로토콜 + 호스트 + 포트 를 전부 합친 서버의 위치, 리소스의 출처를 의미한다 포트는 기본 프로토콜 포트번호가 정해져 있기 때문">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-03-09T13:22:22.000Z">
+<meta property="article:modified_time" content="2022-09-13T06:26:04.097Z">
+<meta property="article:author" content="maskking">
+<meta property="article:tag" content="web">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>CORS 이해하기 - 복면 개발왕</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"the-masked-developer.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>복면 개발왕</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                메인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                타임라인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                카테고리
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/authors/">
+                <i class="iconfont icon-users"></i>
+                저자
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                태그
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-plan"></i>
+                블로그 역사
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/bg.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="CORS 이해하기">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-author" aria-hidden="true"></i>
+    seonjl
+  </span>
+   
+  <span class="post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2021-03-09 22:22" pubdate>
+      March 9, 2021 pm
+    </time>
+  </span>
+  
+</div>
+
+<div class="mt-1">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-chart"></i>
+    2.5k 글자
+  </span>
+   
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-clock-fill"></i>
+      8 분
+  </span>
+    
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">CORS 이해하기</h1>
+            
+            <div class="markdown-body">
+              <h3 id="CORS-란"><a href="#CORS-란" class="headerlink" title="CORS 란"></a>CORS 란</h3><p>교차 출처 리소스 공유 ( Cross-Origin Resource Sharing) 을 의미한다.</p>
+<p>여기서 출처 ( Origin ) 이란</p>
+<p><code>https://api.server.com/blah/blah</code>  와 같은 URL 에서</p>
+<p>프로토콜 + 호스트 + 포트 를 전부 합친 서버의 위치, 리소스의 출처를 의미한다</p>
+<p>포트는 기본 프로토콜 포트번호가 정해져 있기 때문에 생략할 수 있으며, 만약 명시적으로 포트가 포함되어 있다면 포트번호까지 모두 일치해야 한다.</p>
+<h3 id="SOP-Same-Origin-Policy"><a href="#SOP-Same-Origin-Policy" class="headerlink" title="SOP ( Same-Origin Policy )"></a>SOP ( Same-Origin Policy )</h3><p>다른 출처로의 리소스 요청을 제한하는 보안 정책</p>
+<p>다른 출처의 리소스를 마음대로 가져와서 사용할 수 있는 웹 환경은 매우 보안에 취약하다.그래서, 이러한 SOP 정책을 도입하여 안전한 환경을 구축 할 수 있지만, 다른 출처에 리소스를 가져와서 사용하는 일은 분명히 필요한 일이기에, 예외적으로 이를 허용해 줄 필요가 있다.</p>
+<p>그 중 하나가 바로 CORS 정책을 지킨 리소스 요청이다.</p>
+<p>이러한 보안 정책은 브라우저에 내장되어 있기 때문에 브라우저를 통하지 않고 서버 간 통신을 할 떄는 적용되지 않는다.</p>
+<h3 id="CORS-의-기본적인-동작-방식"><a href="#CORS-의-기본적인-동작-방식" class="headerlink" title="CORS 의 기본적인 동작 방식"></a>CORS 의 기본적인 동작 방식</h3><p>클라이언트는 HTTP 프로토콜을 사용하여 요청을 보내게 되고,<br>이때 브라우저는 요청 헤더에 <code>Origin</code> 필드에 출처를 함께 담아 보낸다.</p>
+<p>이 요청을 받은 서버는 응답 헤더의 <code>Access-Control-Allow-Origin</code> 이라는 키에 허용된 출처 값을 내려주고, 응답을 받은 브라우저는 자신이 보낸 요청의 Origin 과 서버가 보내준 응답의 <code>Access-Control-Allow-Origin</code> 을 비교해 본 후 유효성을 결정한다.</p>
+<h2 id="세가지-시나리오"><a href="#세가지-시나리오" class="headerlink" title="세가지 시나리오"></a>세가지 시나리오</h2><h3 id="Preflight-Request"><a href="#Preflight-Request" class="headerlink" title="Preflight Request"></a>Preflight Request</h3><p>클라이언트가 요청을 보내기 전 브라우저가 보내게 되는 예비 요청이다</p>
+<p>OPTIONS 메소드를 사용하여 서버가 어떤 것들을 허용하고, 어떤 것들을 금지하고 있는지에 대한 정보를 담아오게 된다. 브라우저는 이 요청을 검사한 후 본 요청의 송신 여부를 결정하게 된다.</p>
+<h3 id="Simple-Request"><a href="#Simple-Request" class="headerlink" title="Simple Request"></a>Simple Request</h3><p>브라우저가 예비요청을 보내지 않고 바로 본 요청을 보내는 경우도 있다.</p>
+<p>아래에 특정한 조건을 만족하는 경우에 보내지게 된다.</p>
+<ol>
+<li>요청의 메소드는 <code>GET</code>, <code>HEAD</code>, <code>POST</code> 중 하나여야 한다.</li>
+<li><code>Accept</code>, <code>Accept-Language</code>, <code>Content-Language</code>, <code>Content-Type</code>, <code>DPR</code>, <code>Downlink</code>, <code>Save-Data</code>, <code>Viewport-Width</code>, <code>Width</code>를 제외한 헤더를 사용하면 안된다.</li>
+<li>만약 <code>Content-Type</code>를 사용하는 경우에는 <code>application/x-www-form-urlencoded</code>, <code>multipart/form-data</code>, <code>text/plain</code>만 허용된다.</li>
+</ol>
+<h3 id="Credentialed-Request"><a href="#Credentialed-Request" class="headerlink" title="Credentialed Request"></a>Credentialed Request</h3><p>클라이언트에 요청에 자격증명모드가 <code>include</code> 일경우 발생한다. </p>
+<p>이러한 경우 브라우저에 보안 정책이 한가지 더 추가 되게 된다.</p>
+<p>브라우저는 쿠키정보나 인증과 관련된 헤더를 함부로 요청에 담지 않는다. 이러한 인증정보를 요청에 담을 수 있게 해주는 옵션이 바로 <code>Request.credentails</code> 옵션이다.</p>
+<ol>
+<li><code>same-origin (default)</code>  :  같은 출처 간 요청에만 인증 정보를 담을 수 있다.</li>
+<li><code>include</code>  :  모든 요청에 인증 정보를 담을 수 있다.</li>
+<li><code>omit</code>  :  모든 요청에 인증 정보를 담지 않는다</li>
+</ol>
+<p>만약 다른 출처로 인증관련 헤더를 포함하여 요청을 보내고 싶다면<br>credentials 의 include 모드를 사용하여 요청을 작성하여 보내야 한다. </p>
+<p>이때 발생할 수 있는 두가지 정책 위반이 있다.</p>
+<div class="note note-info">
+            <p>🚨  Access to fetch at ’<a target="_blank" rel="noopener" href="https://api.server.com’">https://api.server.com’</a> from origin ’<a href="http://localhost:8000’">http://localhost:8000’</a> has been blocked by CORS policy: The value of the ‘Access-Control-Allow-Origin’ header in the response must not be the wildcard ’*’ when the request’s credentials mode is ‘include’.</p>
+          </div>
+
+
+<div class="note note-info">
+            <p>🚨  Access to XMLhttpRequest at ’<a target="_blank" rel="noopener" href="https://api.server.com’">https://api.server.com’</a> from origin ’<a href="http://localhost:8000’">http://localhost:8000’</a> has been blocked by CORS policy: Response to preflight request doesn’t pass access control check: The value of the ‘Access-Control-Allow-Credentials’ header in the response is ‘ ‘ which must be ‘true’ when the request’s credentials mode is ‘include’. The credentials mode of requests initiated by the  XMLhttpRequest is controlled by the withCredentials attribute.</p>
+          </div>
+
+
+<div class="note note-warning">
+            <ol><li>* 를 <code>Access-Control-Allow-Origin</code> 헤더에 사용하면 안된다.</li><li>응답 헤더에 반드시 <code>Access-Control-Allow-Credentials: true</code> 가 존재해야한다.</li></ol>
+          </div>
+
+
+<h2 id="해결방법"><a href="#해결방법" class="headerlink" title="해결방법"></a>해결방법</h2><h3 id="Access-Control-Allow-Origin-세팅하기"><a href="#Access-Control-Allow-Origin-세팅하기" class="headerlink" title="Access-Control-Allow-Origin 세팅하기"></a>Access-Control-Allow-Origin 세팅하기</h3><p>nginx 설정에서 헤더값을 세팅해주거나</p>
+<p>application 에서 세팅해주거나 하면 된다.</p>
+<p>* 로 전체를 허용해 주기 보다는 특정한 출처를 명시해주는 편이 좋다.</p>
+<h3 id="Webpack-Dev-Server-로-리버스-프록싱하기"><a href="#Webpack-Dev-Server-로-리버스-프록싱하기" class="headerlink" title="Webpack Dev Server 로 리버스 프록싱하기"></a>Webpack Dev Server 로 리버스 프록싱하기</h3><p>devServer 에 proxy 옵션을 사용해 특정 주소로 프록싱을 해주면</p>
+<p>브라우저는 내가 세팅한 특정주소를 Origin 으로 알고 요청을 보내기 때문에 </p>
+<p>CORS 정책을 지킨 것 처럼 브라우저를 속이고 통신할 수 있다.</p>
+<h3 id="Hosts-파일-이용하기"><a href="#Hosts-파일-이용하기" class="headerlink" title="Hosts 파일 이용하기"></a>Hosts 파일 이용하기</h3><p>hosts 파일 위치 : <code>C:\Windows\System32\drivers\etc</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">127.0.0.1:8080		api.front.com<br></code></pre></td></tr></table></figure>
+
+<p>호스트파일을 위와 같이 변경하여 마치 같은 Origin 인 것처럼 속일 수 도 있다.</p>
+<h3 id="참고자료"><a href="#참고자료" class="headerlink" title="참고자료"></a>참고자료</h3><hr>
+<p><a target="_blank" rel="noopener" href="https://evan-moon.github.io/2020/05/21/about-cors/">CORS는 왜 이렇게 우리를 힘들게 하는걸까?</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/web/">web</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/web/">web</a>
+                    
+                  </div>
+                
+              </div>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/wiki/guide/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">글 작성 가이드</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/wiki/no-so-file/">
+                        <span class="hidden-mobile">리눅스에서 무슨무슨 so 파일이 없다고 할 때</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'the-masked-developer/the-masked-developer.github.io');
+      s.setAttribute('issue-term', 'title');
+      
+      s.setAttribute('label', 'comment');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+    
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        loader: {
+          load: ['ui/lazy']
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js" ></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({"theme":"default"});
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

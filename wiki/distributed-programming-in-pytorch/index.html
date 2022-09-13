@@ -1,0 +1,671 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="For Memory">
+  <meta name="author" content="wayexists02">
+  <meta name="keywords" content="Dev">
+  <link rel="alternate" href="/atom.xml" title="복면 개발왕" type="application/atom+xml">
+  <meta name="description" content="Distributed Programming in PyTorchPyTorch는 멀티 GPU 학습을 위해 torch.nn.DataParallel을 제공한다. 이 클래스의 사용법은 상당히 간단한데, 모델을 만든 후, torch.nn.DataParallel을 씌워주면 된다. 예를들어, 다음과 같다. 12345678910111213141516class Model(n">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Distributed Programming in PyTorch">
+<meta property="og:url" content="https://the-masked-developer.github.io/wiki/distributed-programming-in-pytorch/index.html">
+<meta property="og:site_name" content="복면 개발왕">
+<meta property="og:description" content="Distributed Programming in PyTorchPyTorch는 멀티 GPU 학습을 위해 torch.nn.DataParallel을 제공한다. 이 클래스의 사용법은 상당히 간단한데, 모델을 만든 후, torch.nn.DataParallel을 씌워주면 된다. 예를들어, 다음과 같다. 12345678910111213141516class Model(n">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-11-30T13:22:10.000Z">
+<meta property="article:modified_time" content="2022-09-13T06:26:04.097Z">
+<meta property="article:author" content="maskking">
+<meta property="article:tag" content="프로그래밍">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>Distributed Programming in PyTorch - 복면 개발왕</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"the-masked-developer.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>복면 개발왕</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                메인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                타임라인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                카테고리
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/authors/">
+                <i class="iconfont icon-users"></i>
+                저자
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                태그
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-plan"></i>
+                블로그 역사
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/bg.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Distributed Programming in PyTorch">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-author" aria-hidden="true"></i>
+    wayexists02
+  </span>
+   
+  <span class="post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2021-11-30 22:22" pubdate>
+      November 30, 2021 pm
+    </time>
+  </span>
+  
+</div>
+
+<div class="mt-1">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-chart"></i>
+    13k 글자
+  </span>
+   
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-clock-fill"></i>
+      41 분
+  </span>
+    
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Distributed Programming in PyTorch</h1>
+            
+            <div class="markdown-body">
+              <h1 id="Distributed-Programming-in-PyTorch"><a href="#Distributed-Programming-in-PyTorch" class="headerlink" title="Distributed Programming in PyTorch"></a>Distributed Programming in PyTorch</h1><p>PyTorch는 멀티 GPU 학습을 위해 <code>torch.nn.DataParallel</code>을 제공한다. 이 클래스의 사용법은 상당히 간단한데, 모델을 만든 후, <code>torch.nn.DataParallel</code>을 씌워주면 된다. 예를들어, 다음과 같다.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Model</span>(<span class="hljs-params">nn.Module</span>):</span><br>	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span>(<span class="hljs-params">self</span>):</span><br>		<span class="hljs-comment"># ...</span><br>	<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">forward</span>(<span class="hljs-params">self, x</span>):</span><br>		<span class="hljs-comment"># ...</span><br><br>model = Model().cuda()<br>dmodel = nn.DataParallel(model).cuda()<br><br><span class="hljs-keyword">for</span> e <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(EPOCHS):<br>	<span class="hljs-keyword">for</span> x, y <span class="hljs-keyword">in</span> trainloader:<br>		logps = dmodel(x)   <span class="hljs-comment"># 여기서, model 대신, dmodel을 사용하면 됨</span><br>											  <span class="hljs-comment"># dmodel은 x를 GPU개수만큼 잘라서 각각 돌리고</span><br>												<span class="hljs-comment"># 그 결과를 concat해서 반환해줌</span><br>		<br>		<span class="hljs-comment"># loss 계산, acc 계산, back-prop 등등 처리</span><br></code></pre></td></tr></table></figure>
+
+<p>이처럼, <code>Model</code>이 들어가야 할 자리에 <code>torch.nn.DataParallel</code> 객체를 넣어주면 된다. 매우 간편하게 멀티 GPU를 사용할 수 있는 셈이다.</p>
+<p>하지만, 이 <code>torch.nn.DataParallel</code> 은 치명적인 문제점이 존재한다.</p>
+<ul>
+<li><p><code>torch.nn.DataParallel</code>은 Thread 기반이다.</p>
+<ul>
+<li><p>아시는분들은 아시겠지만, python의 멀티스레드 프로그래밍에서는 GIL이라는 큰 제약조건이 존재한다.</p>
+<aside>
+💡 GIL(Global Interpreter Lock)이란, 파이썬 인터프리터의 구현 모델중 하나로, 파이썬 인터프리터의 동기화 문제 등으로 인해, 동시에 구동될 수 있는 파이썬 스레드 개수를 최대 1개로 제한해버린 구현 모델을 말한다. 즉, 파이썬 코드로 스레드를 많이 만들어서 코드를 구동하고, 컴퓨터에 프로세서가 많다고 해도, 파이썬은 한 번에 하나의 스레드만 돌린다.
+
+</aside>
+
+
+</li>
+</ul>
+</li>
+</ul>
+<p>따라서, <code>torch.nn.DataParallel</code>을 사용한다고 해서, GPU가 늘어나는 만큼 그 속도가 증가하지는 못한다. PyTorch에는 이러한 문제를 해결하기 위해 <code>torch.nn.parallel.DistributedDataParallel</code> 이라는 클래스를 제공한다.</p>
+<p><code>torch.nn.parallel.DistributedDataParallel</code>은 스레드기반이 아닌 프로세스 기반이다. 파이썬에서는 <code>threading</code>이라는 모듈을 제공하지만, 말했다시피, GIL으로 인해 <code>threading</code>의 성능은 그렇게 좋지 못하다. 파이썬에서는 다행히도 GIL을 피할 수 있게 <code>multiprocessing</code>이라는 모듈을 standard library로 제공하고 있다.</p>
+<p>PyTorch에서는 이 파이썬 <code>multiprocessing</code> 모듈처럼, <code>torch.multiprocessing</code> 모듈과 <code>torch.distributed</code> 모듈을 제공하며, 이는 스레드 기반 분산처리보다 더 나은 분산처리를 구현하는 데 사용될 수 있다. 우리가 여기서 논의할 내용이 바로 PyTorch에서 제공하는 프로세스 기반 분산 프로그래밍이다.</p>
+<h1 id="Distributed-Programming-in-PyTorch-1"><a href="#Distributed-Programming-in-PyTorch-1" class="headerlink" title="Distributed Programming in PyTorch"></a>Distributed Programming in PyTorch</h1><p>여기서 논의할 내용은 다음과 같다.</p>
+<ol>
+<li>PyTorch에서의 프로세스 생성 방법</li>
+<li>PyTorch의 프로세스 그룹과 <code>init_process_group</code> 함수</li>
+<li>PyTorch 프로세스간의 blocking 통신</li>
+<li>PyTorch 프로세스간의 non-blocking 통신</li>
+</ol>
+<p><code>torch.nn.parallel.DistributedDataParallel</code>의 경우, 여기서 다루지는 않고, 나중에 다른 문서에서 다루도록 할 것이다. 본 문서에서는 <code>torch.nn.parallel.DistributedDataParallel</code>를 공부하기 이전에 PyTorch에서 어떻게 프로세스 단위로 프로그래밍할 수 있는지 알아볼 것이다.</p>
+<h2 id="Process-Creation-in-PyTorch"><a href="#Process-Creation-in-PyTorch" class="headerlink" title="Process Creation in PyTorch"></a>Process Creation in PyTorch</h2><p>PyTorch에서는 <code>torch.multiprocessing</code>이라는 모듈을 제공하는데, 파이썬 standard library에서의 <code>multiprocessing</code> 모듈과 유사하게 생겼다.</p>
+<p>PyTorch에서 프로세스를 생성하는 방법은 다음과 같다.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> torch.multiprocessing <span class="hljs-keyword">import</span> Process<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">func</span>(<span class="hljs-params">args</span>):</span><br>	<span class="hljs-comment"># ...</span><br><br>args = []                                <span class="hljs-comment"># func에 넘겨줄 인자 리스트</span><br>p = Process(target=func, args=args)      <span class="hljs-comment"># 프로세스 생성. 이때, 아직,</span><br>																				 <span class="hljs-comment"># 프로세스는 시작하지 않음(func을 구동하지 않음)</span><br><br>p.start()                                <span class="hljs-comment"># 여기서 비로소 프로세스 시작</span><br>p.join()                                 <span class="hljs-comment"># 프로세스가 끝날때까지 기다리고 자원 회수</span><br></code></pre></td></tr></table></figure>
+
+<p>이 형태는 파이썬 <code>threading</code> 라이브러리 사용법과도 매우 유사한데, PyTorch에서 프로세스를 생성하는 방법은 <code>Process</code> 객체를 생성하는 것이다. 이때, <code>Process</code> 생성자로 넘겨주는 파라미터 중 가장 중요한 두 개의 인자는 바로 <code>target</code>과 <code>args</code>이다. <code>target</code>인자는 해당 프로세스가 생성되고 실행할 함수를 의미하며, <code>args</code>는 그 함수에 넘겨줄 파라미터를 받는다. 여기서, <code>target</code>은 <code>func</code>으로 설정되어 있기 때문에, 프로세스는 시작할 때, <code>func</code> 함수를 실행하게 되며, <code>args</code>라는 파라미터를 <code>func</code>의 파라미터로 넘겨주게 된다.</p>
+<p><code>Process</code> 를 통해 프로세스를 생성한다고 해서 프로세스가 바로 시작하지는 않는다. <code>Process</code> 객체의 <code>start</code> 메소드를 호출해야 해당 프로세스가 비로소 <code>target</code>함수를 실행하게 된다.</p>
+<p>Linux 시스템 프로그래밍 경험이 있으시다면, <code>join</code>함수의 중요성을 잘 알 것이다. 기본적으로 프로세스를 코드상에서 생성하게 되면, 그 프로세스는 코드를 구동하는 프로세스의 자식 프로세스로 생성된다. <strong>그리고, 이것은, 코드를 실행하는 프로세스가 자식 프로세스의 자원을 회수할 의무가 있다는 것을 의마한다.</strong></p>
+<p>코드상에서 <code>fork</code>, <code>Process</code>와 같은 코드를 사용하여 프로세스를 생성했다면, 코드에서 그 프로세스의 죽음을 지켜보고 그 자원을 회수할 의무가 있다. <strong>그 역할을 하는 함수가 바로 <code>join</code>이다.</strong> 만약, 코드를 실행하는 프로세스가 자식을 회수하지 않고 끝나버리면, 그 자식 프로세스는 데몬 프로세스가 되는데, 물론, 요즘 운영체제는 부모가 죽으면, 그 자식의 자원을 자동으로 회수해주긴 하지만, 명시적으로 <code>join</code>을 호출해주는 습관을 들이는게 좋다.</p>
+<h2 id="Process-Group"><a href="#Process-Group" class="headerlink" title="Process Group"></a>Process Group</h2><p>PyTorch의 멀티프로세싱에서는 프로세스 그룹이라는 개념이 있다. 프로세스 그룹이란, 말 그대로 여러 프로세스를 묶어 관리하는 것을 말하는데, 프로세스 그룹 안에 속해있는 프로세스들은 peer 프로세스가 몇개가 있고 누가 있는지 알 수 있다. 즉, 그에따라, peer 프로세스와 통신이 가능하다.</p>
+<p>프로세스 그룹은 처음볼때는 이해하기가 좀 까다로운데, 프로세스 그룹이 형성되는 과정은 다음과 같다.</p>
+<ol>
+<li>루트프로세스에서 여러개의 자식 프로세스를 생성한다.</li>
+<li>각 자식 프로세스에서, 마스터(프로세스 중 하나를 마스터로 삼는다)의 주소를 알 수 있게 하는 환경변수를 설정한다.<ul>
+<li><code>MASTER_ADDR</code>: 마스터의 ip주소</li>
+<li><code>MASTER_PORT</code>: 마스터의 포트번호</li>
+</ul>
+</li>
+<li>개발자는 각 자식 프로세스 코드에서 <code>init_process_group</code> 함수를 호출하여, 해당 프로세스가 프로세스 그룹에 속한다는 것을 알려주어야 한다.<ul>
+<li>즉, <code>init_process_group</code>은 해당 프로세스에게, 그룹에 소속되어있다는 사실을 알려주는 함수이다.</li>
+<li><code>init_process_group</code>이 실행되면, 해당 프로세스는 <code>MASTER_ADDR</code>와 <code>MASTER_PORT</code>를 사용하여 마스터와 통신을 시도한다.</li>
+<li>마스터는 여러 프로세스로부터 통신을 받게 되며, 마스터는 그 프로세스들을 서로 통신할 수 있도록 연결시켜준다.</li>
+</ul>
+</li>
+</ol>
+<p>여기서, 알아두어야 할 점은, <code>init_process_group</code>함수는 <strong>프로세스를 생성하지는 않는다</strong>. 프로세스 그룹을 생성하는 역할을 하는 것이다. 또한, <strong>다른 peer 프로세스가 누가 있는지, 알 수 있게 해 주는 함수가 바로 <code>init_process_group</code>이며</strong>, 즉, 다른 peer 프로세스의 존재를 알려줌으로써, 나중에 peer 프로세스와 메시지를 주고받을 수 있게 해 주는 함수도 <code>init_process_group</code>이다.</p>
+<h3 id="Example-of-init-process-group"><a href="#Example-of-init-process-group" class="headerlink" title="Example of init_process_group"></a>Example of <code>init_process_group</code></h3><p>다음은 <code>init_process_group</code>를 사용하는 예제코드를 보여준다(Reference: <a target="_blank" rel="noopener" href="https://pytorch.org/tutorials/intermediate/dist_tuto.html#point-to-point-communication">PyTorch 공식홈피</a>).</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> torch.distributed <span class="hljs-keyword">as</span> dist<br><span class="hljs-keyword">from</span> torch.multiprocessing <span class="hljs-keyword">import</span> Process<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">run</span>(<span class="hljs-params">rank, size</span>):</span><br>	<span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">	프로세스가 실행하는 메인 함수</span><br><span class="hljs-string">	&#x27;&#x27;&#x27;</span><br>	<span class="hljs-comment"># some logic</span><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">init_process</span>(<span class="hljs-params">rank, size, fn, backend=<span class="hljs-string">&quot;gloo&quot;</span></span>):</span><br>	<span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">	이 함수는 각 프로세스에서 실행되는 함수이다.</span><br><span class="hljs-string">	이 함수는 각 프로세스가 만들어졌을 때, 프로세스 그룹을</span><br><span class="hljs-string">	세팅하기 위한 함수로, 세팅이 끝나면, 마지막으로 메인 함수인 run을 호출한다.</span><br><span class="hljs-string">	&#x27;&#x27;&#x27;</span><br><br>	<span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;I am a <span class="hljs-subst">&#123;rank&#125;</span> process!&quot;</span>)<br><br>	<span class="hljs-comment"># 각 프로세스에서는 MASTER_ADDR와 MASTER_PORT 환경변수를 설정해준다.</span><br>	os.environ[<span class="hljs-string">&quot;MASTER_ADDR&quot;</span>] = <span class="hljs-string">&quot;127.0.0.1&quot;</span><br>	os.environ[<span class="hljs-string">&quot;MASTER_PORT&quot;</span>] = <span class="hljs-string">&quot;24500&quot;</span><br><br>	<span class="hljs-comment"># 이 프로세스는 127.0.0.1:24500 을 마스터로 하는 프로세스 그룹에 속한다는 것을</span><br>	<span class="hljs-comment"># 알려준다.</span><br>	dist.init_process_group(backend, rank=rank, world_size=size)<br><br>	<span class="hljs-comment"># fn 함수 호출</span><br>	fn(rank, size)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>	<span class="hljs-comment"># GPU 개수 얻어오기</span><br>	size = torch.cuda.device_count()<br>	<span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Device count:&quot;</span>, size)<br>	<br>	processes = []<br><br>	<span class="hljs-comment"># GPU개수만큼 프로세스 생성 후 각 프로세스에서 init_process 구동</span><br>	<span class="hljs-keyword">for</span> rank <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(size):<br>		p = Process(target=init_process, args=(rank, size, run))<br>		p.start()<br>		processes.append(p)<br><br>	<span class="hljs-comment"># 모든 자식이 죽을때까지 기다렸다가 자원 회수</span><br>	<span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> processes:<br>		p.join()<br></code></pre></td></tr></table></figure>
+
+<p>각 프로세스가 생성되면, <code>init_process</code>라는 함수가 호출되는데, <code>init_process</code>는 해당 프로세스의 환경변수를 세팅하고 프로세스 그룹에 포함된다는 사실을 알려주는(즉, <code>init_process_group</code>을 호출하는) 역할을 수행하는 함수이다. 이러한 세팅이 끝나면, 곧이어 <code>run</code> 함수를 호출하게 되고, <code>run</code> 함수에서 로직을 수행하게 되는 것이다.</p>
+<p><code>init_process_group</code>함수를 자세히 살펴보자. <code>init_process_group</code>은 많은 파라미터를 받을 수 있지만, 이 예제에서는 <code>backend</code>, <code>world_size</code>, <code>rank</code> 세 가지의 파라미터만 사용한다. 다음은 <code>init_process_group</code>의 각 파라미터에 대한 설명이다.</p>
+<ul>
+<li><p><code>backend</code> 파라미터</p>
+<ul>
+<li>PyTorch에서 프로세스 그룹을 생성한다는 것은 여러 프로세스가 서로 통신하며 분산처리를 하겠다는 것을 의미한다. 따라서, 분산처리 백엔드 라이브러리를 사용해야 하며, <code>backend</code> 파라미터는 어떤 백엔드를 사용하여 분산처리를 할 것인지 명시하도록 한다.</li>
+<li>PyTorch는 scratch부터 low-level부터 high-level까지의 분산처리 시스템을 구현한 것이 아니라, 다른 low-level 분산처리 라이브러리를 가저다 쓰는 형태이다. 즉, 백엔드는 다른 라이브러리를 사용한다. PyTorch에서는 세 가지의 백엔드를 지원한다.<ul>
+<li><strong>GLOO</strong>: PyTorch에서 가장 잘 지원하는 라이브러리로, CPU 텐서와 GPU 텐서의 분산처리 모두를 지원한다. 다만, GPU 텐서 연산의 경우 NCCL 백엔드보다는 최적화가 덜 되어 있다고 한다.</li>
+<li><strong>MPI</strong>: Messaging passing interface를 사용하는 백엔드. 이것을 백엔드로 쓰려면, MPI 라이브러리의 추가적인 설치와 세팅이 필요하다. 자세한것은 <a target="_blank" rel="noopener" href="https://pytorch.org/tutorials/intermediate/dist_tuto.html#communication-backends">여기</a> 참고</li>
+<li><strong>NCCL</strong>: GPU 텐서연산에 대해 고도로 최적화된 백엔드이다. GPU에 올라간 텐서만 통신을 지원한다.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code>world_size</code> 파라미터</p>
+<ul>
+<li><p>해당 프로세스 그룹에 속할 프로세스의 총 개수를 의미하며, 각 프로세스에게 몇 개의 peer 프로세스가 있는지 알 수 있도록 해 주는 인자이다.</p>
+</li>
+<li><p>프로세스가 마스터와 통신할때, 몇 개의 peer 프로세스가 접속하기를 기다려야 하는지 알려주는 인자이기도 하다. 즉, 프로세스가 <code>init_process_group</code>을 호출하게 되면, 마스터와 통신을 시도하고, 마스터는 그 프로세스에게 다른 peer 프로세스를 연결시켜 주는데, <code>world_size</code> 파라미터를 명시해주게 되면,  몇 개의 peer 프로세스가 자신과 연결되어야 하는지 알 수 있게 된다(<code>world_size - 1</code>개의 프로세스가 자신과 연결되어야 함).</p>
+<p>  만약, 마스터가 자신에게 <code>world_size - 1</code>개의 프로세스를 아직 연결해주지 못했다면(다른 peer 프로세스가 아직 <code>init_process_group</code>을 호출하지 못했다거나의 이유로)  해당 프로세스는 마스터와 계속 연결을 유지하면서 peer를 기다린다.</p>
+</li>
+</ul>
+</li>
+<li><p><code>rank</code> 파라미터</p>
+<ul>
+<li><p>해당 프로세스의 id값이라고 보면 된다.</p>
+</li>
+<li><p>프로세스 그룹이 생성될때, 각 프로세스는 rank의 값으로 자신의 id를 설정한다. 이 값은 나중에 다른 프로세스와 통신할때 사용된다.</p>
+<p>  즉, 3번 rank를 가진 프로세스에게 tensor를 전송하라! 라는 명령이 가능하다.</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><code>os.environ[&quot;MASTER_ADDR&quot;]</code>와 <code>os.environ[&quot;MASTER_PORT&quot;]</code>의 설정, 그리고, <code>init_process_group</code>은 각각의 프로세스에서 모두 한번씩 실행되어야 함을 주의해야 한다.</p>
+<h2 id="Blocking-Communications-in-PyTorch"><a href="#Blocking-Communications-in-PyTorch" class="headerlink" title="Blocking Communications in PyTorch"></a>Blocking Communications in PyTorch</h2><p><code>init_process_group</code>을 이용하여 각각의 프로세스에게 peer 프로세스가 누가 있는지 알려줄 수 있었다. <code>init_process_group</code>을 통해 peer 프로세스가 누군지 알 수 있게 되면, peer 프로세스의 rank 번호를 이용하여 peer 프로세스와 통신이 가능하다.</p>
+<p>통신에는 blocking 통신과 non-blocking 통신이 존재하는데, 먼저, blocking 통신에 대해 논의해보도록 한다.</p>
+<p>PyTorch에서의 다른 프로세스와의 통신은, 텐서를 주고받는 것이다. 텐서를 보내는 함수로는 <code>torch.distributed.send</code>가 있고, 텐서를 받는 함수로는 <code>torch.distributed.recv</code>가 있다.</p>
+<p><code>torch.distributed.send</code>를 호출하게 되면, 상대방 프로세스가 <code>recv</code>를 호출하여 받을 때까지 blocking된다. 마찬가지로, <code>torch.distributed.recv</code>를 호출하게 되면, 상대방 프로세스가 <code>send</code>를 통해 무언가를 보낼때 까지 blocking된다. 따라서, 타이밍을 잘 맞춰서 사용하도록 하자.</p>
+<h3 id="Example-of-Blocking-Communication-in-PyTorch"><a href="#Example-of-Blocking-Communication-in-PyTorch" class="headerlink" title="Example of Blocking Communication in PyTorch"></a>Example of Blocking Communication in PyTorch</h3><p>다음은 init_process_group의 예제에다가 blocking communication을 구현한 예제이다.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-comment"># GPU개수는 2개라고 가정하자</span><br>os.environ[<span class="hljs-string">&quot;CUDA_VISIBLE_DEVICES&quot;</span>] = <span class="hljs-string">&quot;0,1&quot;</span><br><br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> torch.distributed <span class="hljs-keyword">as</span> dist<br><span class="hljs-keyword">from</span> torch.multiprocessing <span class="hljs-keyword">import</span> Process<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">run</span>(<span class="hljs-params">rank, size</span>):</span><br>	<span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">	프로세스가 실행하는 메인 함수</span><br><span class="hljs-string">	&#x27;&#x27;&#x27;</span><br>	tensor = torch.FloatTensor([<span class="hljs-number">0.0</span>])<br>	<span class="hljs-keyword">if</span> rank == <span class="hljs-number">1</span>:<br>		tensor += <span class="hljs-number">1</span><br>		dist.send(tensor=tensor, dst=<span class="hljs-number">0</span>)<br>	<span class="hljs-keyword">elif</span> rank == <span class="hljs-number">0</span>:<br>		dist.recv(tensor=tensor, src=<span class="hljs-number">1</span>)<br>	<span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Rank:&quot;</span>, rank, <span class="hljs-string">&quot;, Tensor:&quot;</span>, tensor[<span class="hljs-number">0</span>])<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">init_process</span>(<span class="hljs-params">rank, size, fn, backend=<span class="hljs-string">&quot;gloo&quot;</span></span>):</span><br>	<span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">	이 함수는 각 프로세스에서 실행되는 함수이다.</span><br><span class="hljs-string">	이 함수는 각 프로세스가 만들어졌을 때, 프로세스 그룹을</span><br><span class="hljs-string">	세팅하기 위한 함수로, 세팅이 끝나면, 마지막으로 메인 함수인 run을 호출한다.</span><br><span class="hljs-string">	&#x27;&#x27;&#x27;</span><br><br>	<span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;I am a <span class="hljs-subst">&#123;rank&#125;</span> process!&quot;</span>)<br><br>	<span class="hljs-comment"># 각 프로세스에서는 MASTER_ADDR와 MASTER_PORT 환경변수를 설정해준다.</span><br>	os.environ[<span class="hljs-string">&quot;MASTER_ADDR&quot;</span>] = <span class="hljs-string">&quot;127.0.0.1&quot;</span><br>	os.environ[<span class="hljs-string">&quot;MASTER_PORT&quot;</span>] = <span class="hljs-string">&quot;24500&quot;</span><br><br>	<span class="hljs-comment"># 이 프로세스는 127.0.0.1:24500 을 마스터로 하는 프로세스 그룹에 속한다는 것을</span><br>	<span class="hljs-comment"># 알려준다.</span><br>	dist.init_process_group(backend, rank=rank, world_size=size)<br><br>	<span class="hljs-comment"># fn 함수 호출</span><br>	fn(rank, size)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>	<span class="hljs-comment"># GPU 개수 얻어오기</span><br>	size = torch.cuda.device_count()<br>	<span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Device count:&quot;</span>, size)<br>	<br>	processes = []<br><br>	<span class="hljs-comment"># GPU개수만큼 프로세스 생성 후 각 프로세스에서 init_process 구동</span><br>	<span class="hljs-keyword">for</span> rank <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(size):<br>		p = Process(target=init_process, args=(rank, size, run))<br>		p.start()<br>		processes.append(p)<br><br>	<span class="hljs-comment"># 모든 자식이 죽을때까지 기다렸다가 자원 회수</span><br>	<span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> processes:<br>		p.join()<br></code></pre></td></tr></table></figure>
+
+<p>프로세스의 생성과 <code>init_process_group</code>까지는 이전 예제와 같다. 달라진점은 <code>run</code> 함수 내에 다른 peer 프로세스와 통신하는 코드를 넣었다는 점이다.</p>
+<p>말했다시피, 통신은 <code>send</code>함수와 <code>recv</code>함수를 사용한다. send함수는 <code>tensor</code> 객체를 <code>dst</code> 프로세스에게 보내는데, <code>dst</code>에 들어갈 값은 메시지를 받을 프로세스의 rank값이다.</p>
+<p><code>recv</code>함수 역시, 비슷하게 사용하면 되는데, <code>src</code> 프로세스로부터 어떤 텐서를 받아서 <code>tensor</code> 객체에 저장한다. 이때, <code>tensor</code>는 미리 생성해두어야 하며, <code>recv</code>는 받은 텐서객체를 <code>tensor</code>에 덮어씌우게 된다.</p>
+<p>실행결과, 텐서값은 두 프로세스 모두 1이 된다. 0번 프로세스의 경우, 직접 <code>tensor += 1</code>을 해주었고, 1번 프로세스의 경우, 0번으로부터 받은 텐서로 덮어씌웠기 때문이다.</p>
+<h2 id="Non-blocking-Communication-in-PyTorch"><a href="#Non-blocking-Communication-in-PyTorch" class="headerlink" title="Non-blocking Communication in PyTorch"></a>Non-blocking Communication in PyTorch</h2><p>PyTorch에서 process간 통신은 blocking과 non-blocking방식 모두 존재한다고 말했었다. PyTorch는 <code>torch.distributed.send</code>와 <code>torch.distributed.recv</code>라는 blocking 통신을 제공했는데, 이와 비슷하게 <code>torch.distributed.isend</code>, <code>torch.distributed.irecv</code>라는 non-blocking 통신을 제공한다.</p>
+<p><code>torch.distributed.isend</code>를 사용하여 텐서를 그룹 내 어떤 프로세스에게 전송하게 되면, 그 텐서를 수신자가 받을 때까지 기다리지 않고, 바로 리턴되는데, 이때, <code>torch.distributed.isend</code>는 request 객체를 반환한다(<code>torch.distributed.send</code>는 아무것도 반환하지 않음). 메시지가 전달되었는지에 대한 여부는 request 객체의 <code>wait</code> 메소드를 호출하면 알 수 있다. <code>wait</code> 메소드를 호출했을 때, blocking되면 아직 전송이 안된 것이고, 리턴되면 전송된 것이다.</p>
+<p>마찬가지로, <code>torch.distributed.irecv</code>를 호출하게 되면, 텐서가 올때까지 기다리는 게 아니라 request객체를 바로 반환하게 된다(백그라운드에서 송신자로부터 텐서를 계속 기다리고 있음). 텐서가 왔는지 확인하려면 request 객체의 <code>wait</code> 메소드를 호출하면 된다. 역시, blocking되면, 아직 텐서를 못받은 것이고, 리턴되면 텐서를 받은 것이다.</p>
+<h3 id="Example-of-Non-blocking-Communication-in-PyTorch"><a href="#Example-of-Non-blocking-Communication-in-PyTorch" class="headerlink" title="Example of Non-blocking Communication in PyTorch"></a>Example of Non-blocking Communication in PyTorch</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> torch.distributed <span class="hljs-keyword">as</span> dist<br><span class="hljs-keyword">from</span> torch.multiprocessing <span class="hljs-keyword">import</span> Process<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">run</span>(<span class="hljs-params">rank, world_size</span>):</span><br>  <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">  프로세스가 실행하는 메인 함수</span><br><span class="hljs-string">  &#x27;&#x27;&#x27;</span><br>  tensor = torch.FloatTensor([<span class="hljs-number">0.0</span>])<br>  <span class="hljs-keyword">if</span> rank == <span class="hljs-number">0</span>:<br>    tensor += <span class="hljs-number">1</span><br>    req = dist.isend(tensor=tensor, dst=<span class="hljs-number">1</span>)<br>  <span class="hljs-keyword">else</span>:<br>    req = dist.irecv(tensor=tensor, src=<span class="hljs-number">0</span>)<br>  req.wait()<br>  <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Rank:&quot;</span>, rank, <span class="hljs-string">&quot;, Tensor:&quot;</span>, tensor[<span class="hljs-number">0</span>])<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">init_process</span>(<span class="hljs-params">rank, world_size, fn, backend=<span class="hljs-string">&quot;gloo&quot;</span></span>):</span><br>  <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">  이 함수는 각 프로세스에서 실행되는 함수이다.</span><br><span class="hljs-string">  이 함수는 각 프로세스가 만들어졌을 때, 프로세스 그룹을</span><br><span class="hljs-string">  세팅하기 위한 함수로, 세팅이 끝나면, 마지막으로 메인 함수인 run을 호출한다.</span><br><span class="hljs-string">  &#x27;&#x27;&#x27;</span><br><br>  <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;I am a <span class="hljs-subst">&#123;rank&#125;</span> process!&quot;</span>)<br><br>  <span class="hljs-comment"># 각 프로세스에서는 MASTER_ADDR와 MASTER_PORT 환경변수를 설정해준다.</span><br>  os.environ[<span class="hljs-string">&quot;MASTER_ADDR&quot;</span>] = <span class="hljs-string">&quot;127.0.0.1&quot;</span><br>  os.environ[<span class="hljs-string">&quot;MASTER_PORT&quot;</span>] = <span class="hljs-string">&quot;24500&quot;</span><br><br>  <span class="hljs-comment"># 이 프로세스는 127.0.0.1:24500 을 마스터로 하는 프로세스 그룹에 속한다는 것을</span><br>  <span class="hljs-comment"># 알려준다.</span><br>  dist.init_process_group(backend, rank=rank, world_size=world_size)<br><br>  <span class="hljs-comment"># fn 함수 호출</span><br>  fn(rank, world_size)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>  <span class="hljs-comment"># GPU 개수 얻어오기</span><br>  world_size = torch.cuda.device_count()<br><br>  processes = []<br><br>  <span class="hljs-comment"># GPU개수만큼 프로세스 생성 후 각 프로세스에서 init_process 구동</span><br>  <span class="hljs-keyword">for</span> rank <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(world_size):<br>    p = Process(target=init_process, args=(rank, world_size, run))<br>    p.start()<br>    processes.append(p)<br><br>  <span class="hljs-comment"># 모든 자식이 죽을때까지 기다렸다가 자원 회수</span><br>  <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> processes:<br>    p.join()<br></code></pre></td></tr></table></figure>
+
+<h2 id="Reduce-amp-Broadcast"><a href="#Reduce-amp-Broadcast" class="headerlink" title="Reduce &amp; Broadcast"></a>Reduce &amp; Broadcast</h2><p><code>dist.recv</code>, <code>dist.send</code>, <code>dist.irecv</code>, <code>dist.isend</code> 처럼 텐서 단위를 직접 주고받는 연산도 있지만, 각 프로세스에 있는 텐서를 자동으로 모아서 합쳐준다거나, 하나의 텐서를 모든 프로세스에게 자동으로 뿌려주는 연산도 있다. 전자는 <code>reduce</code>, 후자는 <code>broadcast</code>로써 PyTorch에서 함수로 지원한다.</p>
+<h3 id="Reduce"><a href="#Reduce" class="headerlink" title="Reduce"></a>Reduce</h3><p>Reduce는 각 프로세스에 있는 텐서를 모아서 aggregation해주는 함수로, <code>dist.reduce</code>로 존재한다. 다음 예시 코드를 보자.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> torch.utils.data.distributed <span class="hljs-keyword">import</span> DistributedSampler<br><span class="hljs-keyword">from</span> torch <span class="hljs-keyword">import</span> distributed <span class="hljs-keyword">as</span> dist<br><span class="hljs-keyword">from</span> torch <span class="hljs-keyword">import</span> multiprocessing <span class="hljs-keyword">as</span> mp<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> os<br><br>WORLD_SIZE = <span class="hljs-number">4</span><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setup</span>(<span class="hljs-params">rank, world_size</span>):</span><br>    os.environ[<span class="hljs-string">&quot;MASTER_ADDR&quot;</span>] = <span class="hljs-string">&quot;127.0.0.1&quot;</span><br>    os.environ[<span class="hljs-string">&quot;MASTER_PORT&quot;</span>] = <span class="hljs-string">&quot;25555&quot;</span><br>    os.environ[<span class="hljs-string">&quot;RANK&quot;</span>] = <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;rank&#125;</span>&quot;</span><br>    os.environ[<span class="hljs-string">&quot;WORLD_SIZE&quot;</span>] = <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;world_size&#125;</span>&quot;</span><br>    <br>    dist.init_process_group(<span class="hljs-string">&quot;gloo&quot;</span>, rank=rank, world_size=world_size)<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">run</span>(<span class="hljs-params">rank, world_size</span>):</span><br>    setup(rank, world_size)<br><br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>        tensor = torch.randn(<span class="hljs-number">2</span>, <span class="hljs-number">2</span>)<br><br>				<span class="hljs-comment"># 4개의 머신에서 tensor를 모두 0번 머신으로 보내고,</span><br>				<span class="hljs-comment"># 0번 머신은 tensor를 모두 모아서 SUM한 값을 tensor에 대입한다.</span><br>        dist.reduce(tensor, <span class="hljs-number">0</span>, dist.ReduceOp.SUM)<br>        <span class="hljs-built_in">print</span>(tensor)<br><br>        time.sleep(<span class="hljs-number">1</span>)<br>        <br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>		mp.spawn(run, args=(WORLD_SIZE,), nprocs=WORLD_SIZE, join=<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
+
+<p>이 코드는 1초마다 4개의 프로세스에서 (2, 2) 크기의 랜덤 텐서를 생성하고 텐서를 0번 텐서에 모두 모아서 덧셈하는 것을 수행하는 코드이다.</p>
+<p>각 머신이 <code>dist.reduce(tensor, 0, dist.ReduceOp.SUM)</code>라는 코드를 만났을 때 취하는 행동은 다음과 같다.</p>
+<ul>
+<li><p>자신이 0번 프로세스인 경우</p>
+<p>  다른 프로세스로부터 값을 모으고 모두 SUM해서 <code>tensor</code>에 저장한다.</p>
+</li>
+<li><p>자신이 0번 프로세스가 아닌 경우</p>
+<p>  0번 프로세스에게 <code>tensor</code>값을 전송한다.</p>
+</li>
+</ul>
+<p>위 코드에서, 0번 머신은 <code>tensor</code>값이 변하지만, 나머지 프로세스는 <code>tensor</code>값이 변하지 않는다. 0번 머신은 다른 머신이 보낸 텐서를 모두 모아서 더하고 그 값을 <code>tensor</code>로 저장했지만, 나머지 머신은 그저 0번 머신에게 전송만 했기 때문이다.</p>
+<h3 id="Broadcast"><a href="#Broadcast" class="headerlink" title="Broadcast"></a>Broadcast</h3><p>Broadcast는 PyTorch에서 <code>dist.boardcast</code>로 제공되는 기능으로, 하나의 프로세스에서 다른 프로세스로 텐서를 뿌려주는(전파시키는) 역할을 하는 함수이다. 다음 예제를 보자.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> torch <span class="hljs-keyword">import</span> distributed <span class="hljs-keyword">as</span> dist<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">average_gradient</span>(<span class="hljs-params">model, world_size</span>):</span><br>		<span class="hljs-keyword">for</span> param <span class="hljs-keyword">in</span> model.parameters():<br>				<span class="hljs-comment"># gradient를 0번 머신이 모아서 평균냄</span><br>				dist.reduce(param.grad.data, <span class="hljs-number">0</span>, dist.ReduceOp.SUM)<br>				param.grad.data /= world_size<br><br>				<span class="hljs-comment"># 0번 머신은 gradient를 모두에게 전송함</span><br>				dist.broadcast(param.grad.data, <span class="hljs-number">0</span>)<br></code></pre></td></tr></table></figure>
+
+<p>이 예제에서, <code>dist.broadcast</code>는 0번 머신이 자신의 데이터(gradient)를 모든 머신에게 전송하는 역할을 한다.</p>
+<p>각 프로세스가 <code>dist.broadcast(tensor, 0)</code>라는 코드를 만났을때, 수행하는 행동은 다음과 같다.</p>
+<ul>
+<li><p>자신이 0번 프로세스인 경우</p>
+<p>  자신의 <code>tensor</code>데이터를 모두에게 전송한다.</p>
+</li>
+<li><p>자신이 0번 프로세스가 아닌 경우,</p>
+<p>  0번 프로세스로부터 데이터를 받을때까지 기다리고, 데이터를 받으면 <code>tensor</code>에 저장한다.</p>
+</li>
+</ul>
+<h2 id="Machine-to-Machine-Communication"><a href="#Machine-to-Machine-Communication" class="headerlink" title="Machine-to-Machine Communication"></a>Machine-to-Machine Communication</h2><p>PyTorch 통신은 프로세스끼리도 가능하지만 다른 컴퓨터끼리도 가능하다. 해답은 <code>MASTER_ADDR</code>를 다른 컴퓨터 IP 주소로 설정하는 것이다.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setup</span>(<span class="hljs-params">rank, world_size</span>):</span><br>    os.environ[<span class="hljs-string">&quot;MASTER_ADDR&quot;</span>] = <span class="hljs-string">&quot;???.???.???.???&quot;</span><br>    os.environ[<span class="hljs-string">&quot;MASTER_PORT&quot;</span>] = <span class="hljs-string">&quot;25555&quot;</span><br>    os.environ[<span class="hljs-string">&quot;RANK&quot;</span>] = <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;rank&#125;</span>&quot;</span><br>    os.environ[<span class="hljs-string">&quot;WORLD_SIZE&quot;</span>] = <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;world_size&#125;</span>&quot;</span><br>    <br>    dist.init_process_group(<span class="hljs-string">&quot;nccl&quot;</span>, rank=rank, world_size=world_size)<br></code></pre></td></tr></table></figure>
+
+<p>MASTER_ADDR에 들어가는 주소는 다른 컴퓨터가 인지 가능한 주소여야 하며, <strong>마스터 자신또한 자신이 해당 주소라는 것을 알 수 있어야 한다.</strong></p>
+<p>“마스터 자신또한 자신이 해당 주소라는 것을 알 수 있어야 한다”는 점도 상당히 중요한데, 만약, GCP(Google Cloud Platform)와 같은 서비스를 이용해서 분산 처리 시스템을 구현한다면, 이게 문제가 될 수 있다.</p>
+<p>만약, GCP의 같은 계정, 같은 region 안에 존재하는 서버끼리는(또는 같은 VPC 네트워크 내에 존재하는 서버끼리는) 문제없이 통신되지만, 다른 GCP 계정에 존재하는 서버와 PyTorch 통신을 하려는 경우, 이게 문제가 생긴다.</p>
+<p><code>dist.init_process_group</code>에서는 외부 IP로 연결이 가능하지만, 그 이후에 각 머신이 서로 통신하는 과정은 각 머신이 알고 있는 자신의 IP로 통신을 시도한다. 근데, GCP VM은 자신의 외부 IP를 모른다(ifconfig 입력해보면 자신의 외부 IP가 나오지 않음). 이것 때문에, <code>dist.init_proces_group</code>은 통과하지만, 그 이후 통신에서 connect가 안되는 문제가 발생할 수 있다.</p>
+<p>만약, 본인 계정에서 머신 여러개를 만들고 통신하는건 문제가 되지 않는다. 하지만, 다른 VPC 네트워크에 존재하는 VM으로의 통신은 필자가 알기로는 방법이 없어 보인다. 따라서, 다른 VPC 네트워크에 속한 VM과 통신하고자 한다면, PyTorch 통신 이외에 다른 통신법을 찾아보기를 권한다.</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D/">프로그래밍</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D/">프로그래밍</a>
+                    
+                  </div>
+                
+              </div>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/wiki/restful-api-design/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">RESTful API design.</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/wiki/helm/">
+                        <span class="hidden-mobile">Helm 사용해보기</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'the-masked-developer/the-masked-developer.github.io');
+      s.setAttribute('issue-term', 'title');
+      
+      s.setAttribute('label', 'comment');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+    
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        loader: {
+          load: ['ui/lazy']
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

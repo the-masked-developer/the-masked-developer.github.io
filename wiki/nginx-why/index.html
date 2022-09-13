@@ -1,0 +1,507 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="For Memory">
+  <meta name="author" content="maskking">
+  <meta name="keywords" content="Dev">
+  <link rel="alternate" href="/atom.xml" title="복면 개발왕" type="application/atom+xml">
+  <meta name="description" content="Nginx 보다 먼저 만들어진 Apache server1995년에 만들어진 Apache 는 많은 클라이언트의 요청을 처리할 수 있게 해주어 많이 사용되었으며, 확장성 과 안정성 이 매우 뛰어남. client 의 요청이 들어올 경우, 미리 fork 해 둔 Process Pool 에서 해당 커넥션을 처리할 Process 를 할당하고 그 프로세스가 요청을 처리하">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx 간단 개념 (why 중심)">
+<meta property="og:url" content="https://the-masked-developer.github.io/wiki/nginx-why/index.html">
+<meta property="og:site_name" content="복면 개발왕">
+<meta property="og:description" content="Nginx 보다 먼저 만들어진 Apache server1995년에 만들어진 Apache 는 많은 클라이언트의 요청을 처리할 수 있게 해주어 많이 사용되었으며, 확장성 과 안정성 이 매우 뛰어남. client 의 요청이 들어올 경우, 미리 fork 해 둔 Process Pool 에서 해당 커넥션을 처리할 Process 를 할당하고 그 프로세스가 요청을 처리하">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-11-15T04:31:04.000Z">
+<meta property="article:modified_time" content="2022-09-13T06:26:04.097Z">
+<meta property="article:author" content="maskking">
+<meta property="article:tag" content="Dev">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>Nginx 간단 개념 (why 중심) - 복면 개발왕</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"the-masked-developer.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>복면 개발왕</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                메인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                타임라인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                카테고리
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/authors/">
+                <i class="iconfont icon-users"></i>
+                저자
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                태그
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-plan"></i>
+                블로그 역사
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/bg.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Nginx 간단 개념 (why 중심)">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-author" aria-hidden="true"></i>
+    maskking
+  </span>
+   
+  <span class="post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2021-11-15 13:31" pubdate>
+      November 15, 2021 pm
+    </time>
+  </span>
+  
+</div>
+
+<div class="mt-1">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-chart"></i>
+    1.2k 글자
+  </span>
+   
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-clock-fill"></i>
+      4 분
+  </span>
+    
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Nginx 간단 개념 (why 중심)</h1>
+            
+            <div class="markdown-body">
+              <h2 id="Nginx-보다-먼저-만들어진-Apache-server"><a href="#Nginx-보다-먼저-만들어진-Apache-server" class="headerlink" title="Nginx 보다 먼저 만들어진 Apache server"></a>Nginx 보다 먼저 만들어진 Apache server</h2><p>1995년에 만들어진 Apache 는 많은 클라이언트의 요청을 처리할 수 있게 해주어 많이 사용되었으며, <strong>확장성</strong> 과 <strong>안정성</strong> 이 매우 뛰어남. client 의 요청이 들어올 경우, 미리 fork 해 둔 Process Pool 에서 해당 커넥션을 처리할 Process 를 할당하고 그 프로세스가 요청을 처리하게 됨. (초과 될 경우 fork) 이런 특징은 한 서버가 여러 요청을 처리할 수 있게 만들었으며 개발자들이 다양한 모듈을 작성할 수 있게 했다고 함. </p>
+<h2 id="C10k-시대와-Apache"><a href="#C10k-시대와-Apache" class="headerlink" title="C10k 시대와 Apache"></a>C10k 시대와 Apache</h2><p><strong>C10k</strong> (10,000 Connection problem): 스마트폰의 등장과 인터넷의 활성화로 점점 client 가 많아지면서, 다음과 같은 문제점들에 직면하게 됨.</p>
+<ol>
+<li>TCP Connection 생성의 비용은 비싸다. 그러므로 KeepAlive 로 client 들은 Connection 을 끊지 않기 시작했다.</li>
+<li>Process 생성에는 메모리가 필요하다. Connection 의 수 = 메모리 필요량이 비례하면서 부족지기 시작했다.</li>
+<li>Request 를 처리하기 위해 Process 를 switching 하는 context switching 비용도 비싸다.</li>
+</ol>
+<p>그래서 위 문제를 해결하고자 Apache 진영도 많은 고민을 하고 개선해나가고 있으며, 새로운 구조로 만들어진 게 Nginx 이다.</p>
+<h2 id="Nginx-의-특장점"><a href="#Nginx-의-특장점" class="headerlink" title="Nginx 의 특장점"></a>Nginx 의 특장점</h2><p><strong>Event Driven</strong> 구조이다. Nginx 에서 Event 란, Connection 의 생성, 제거, 처리 등을 말한다. Nginx 에는 Master Process 와 그것이 생성하는 Worker Process 가 있는데, Worker 는 Event 를 기다렸다가 처리한다. 처리는 Worker Process 의 Thread Pool 의 Thread 에게 맡기므로, 혹시 Event 늖 Blocking 이므로 처리중 I/O 등으로 오래걸리는 Event 가 있을 경우도 동시에 처리가 가능하다.</p>
+<p>개략적인 구조의 변경은 위와 같고, 정리해서/ 추가적으로 특장점은 다음과 같다.</p>
+<ul>
+<li>하나의 Worker Process 가 많은 Connection Event 을 처리할 수 있게 되었다.</li>
+<li>적은 Worker Process 의 수를 가지기 때문에, (보통 코어개수) 메모리 사용량이 적다. (요청이 늘어도 Thread stack 크기 정도의 메모리 추가사용)</li>
+<li>I/O 가 많이 필요한 Blocking 작업들 또한 효율적으로 처리하게 되었다.</li>
+<li>Worker Process 를 새로 띄우고 Event 를 맡기면 되므로, 동적으로 설정변경이 가능하게 되었다. (최 앞단에서 로드밸런싱등을 수행할 때 Single Point 잉므로 이 기능은 매우 핵심)</li>
+</ul>
+<h2 id="Nginx-의-기능"><a href="#Nginx-의-기능" class="headerlink" title="Nginx 의 기능"></a>Nginx 의 기능</h2><p><a target="_blank" rel="noopener" href="https://nginx.org/en/">https://nginx.org/en/</a></p>
+<ul>
+<li>정적파일 서빙, 및 오토인덱싱, open fd 캐싱? 등</li>
+<li>리버스 프록시서버로써 동작 및 캐싱.</li>
+<li>로드밸런싱, fault tolerance</li>
+<li>filter 로써, 데이터 압축, 변환, …</li>
+<li>SSL Termination - SSL 처리 부담을 로직서버에 안가게끔 앞단에서 처리</li>
+<li>CORS / HTTP/2 등</li>
+</ul>
+<h2 id="참고자료"><a href="#참고자료" class="headerlink" title="참고자료"></a>참고자료</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://nginx.org/en/">Nginx official docs</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=6FAwAXXj5N0">우아한 형제들 10분 테코톡</a></li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D/">프로그래밍</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/wiki/bayesian-01-probability/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Bayesian Statistics 01. Probability</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/wiki/struct-obj-1-poly/">
+                        <span class="hidden-mobile">자료구조와 객체 (1) - 추상화와 다형성</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'the-masked-developer/the-masked-developer.github.io');
+      s.setAttribute('issue-term', 'title');
+      
+      s.setAttribute('label', 'comment');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+    
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

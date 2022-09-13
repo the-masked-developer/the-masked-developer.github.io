@@ -1,0 +1,637 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="For Memory">
+  <meta name="author" content="moon">
+  <meta name="keywords" content="Dev">
+  <link rel="alternate" href="/atom.xml" title="복면 개발왕" type="application/atom+xml">
+  <meta name="description" content="JPA, JpaRepository 소개 JPA란?    Java ORM 기술 표준으로 사용하는 인터페이스 모음    JpaRepository란?    Spring, SpringBoot Framework에서 제공하는 인터페이스 QueryByExampleExecutor와 PagingAndSortingRepository를 상속함 기본적인 수준의 검색 메서드가 정">
+<meta property="og:type" content="article">
+<meta property="og:title" content="업무시간에 몰래 작성해보는 springboot jpa entity와 dto">
+<meta property="og:url" content="https://the-masked-developer.github.io/wiki/[springboot]jpa-dto-basic/index.html">
+<meta property="og:site_name" content="복면 개발왕">
+<meta property="og:description" content="JPA, JpaRepository 소개 JPA란?    Java ORM 기술 표준으로 사용하는 인터페이스 모음    JpaRepository란?    Spring, SpringBoot Framework에서 제공하는 인터페이스 QueryByExampleExecutor와 PagingAndSortingRepository를 상속함 기본적인 수준의 검색 메서드가 정">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-12-15T08:50:00.000Z">
+<meta property="article:modified_time" content="2022-09-13T06:26:04.097Z">
+<meta property="article:author" content="maskking">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="springboot">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>업무시간에 몰래 작성해보는 springboot jpa entity와 dto - 복면 개발왕</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"the-masked-developer.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>복면 개발왕</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                메인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                타임라인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                카테고리
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/authors/">
+                <i class="iconfont icon-users"></i>
+                저자
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                태그
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-plan"></i>
+                블로그 역사
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/bg.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="업무시간에 몰래 작성해보는 springboot jpa entity와 dto">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-author" aria-hidden="true"></i>
+    moon
+  </span>
+   
+  <span class="post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2021-12-15 17:50" pubdate>
+      December 15, 2021 pm
+    </time>
+  </span>
+  
+</div>
+
+<div class="mt-1">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-chart"></i>
+    4.6k 글자
+  </span>
+   
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-clock-fill"></i>
+      14 분
+  </span>
+    
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">업무시간에 몰래 작성해보는 springboot jpa entity와 dto</h1>
+            
+            <div class="markdown-body">
+              <h3 id="JPA-JpaRepository-소개"><a href="#JPA-JpaRepository-소개" class="headerlink" title="JPA, JpaRepository 소개"></a>JPA, JpaRepository 소개</h3><hr>
+<p>JPA란?  </p>
+<ul>
+<li>Java ORM 기술 표준으로 사용하는 인터페이스 모음  </li>
+</ul>
+<p>JpaRepository란?  </p>
+<ul>
+<li>Spring, SpringBoot Framework에서 제공하는 인터페이스<ul>
+<li>QueryByExampleExecutor와 PagingAndSortingRepository를 상속함</li>
+<li>기본적인 수준의 검색 메서드가 정의되어 있어서 override하여 사용 가능</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">JpaRepository</span>&lt;<span class="hljs-title">T</span>, <span class="hljs-title">ID</span>&gt; <span class="hljs-keyword">extends</span> <span class="hljs-title">PagingAndSortingRepository</span>&lt;<span class="hljs-title">T</span>, <span class="hljs-title">ID</span>&gt;, <span class="hljs-title">QueryByExampleExecutor</span>&lt;<span class="hljs-title">T</span>&gt; </span>&#123;<br><br>	<span class="hljs-comment">/*</span><br><span class="hljs-comment">	 * (non-Javadoc)</span><br><span class="hljs-comment">	 * @see org.springframework.data.repository.CrudRepository#findAll()</span><br><span class="hljs-comment">	 */</span><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-function">List&lt;T&gt; <span class="hljs-title">findAll</span><span class="hljs-params">()</span></span>;<br><br>	<span class="hljs-comment">/*</span><br><span class="hljs-comment">	 * (non-Javadoc)</span><br><span class="hljs-comment">	 * @see org.springframework.data.repository.PagingAndSortingRepository#findAll(org.springframework.data.domain.Sort)</span><br><span class="hljs-comment">	 */</span><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-function">List&lt;T&gt; <span class="hljs-title">findAll</span><span class="hljs-params">(Sort sort)</span></span>;<br><br>	<span class="hljs-comment">/*</span><br><span class="hljs-comment">	 * (non-Javadoc)</span><br><span class="hljs-comment">	 * @see org.springframework.data.repository.CrudRepository#findAll(java.lang.Iterable)</span><br><span class="hljs-comment">	 */</span><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-function">List&lt;T&gt; <span class="hljs-title">findAllById</span><span class="hljs-params">(Iterable&lt;ID&gt; ids)</span></span>;<br>	<br>	...<br></code></pre></td></tr></table></figure>
+
+<h3 id="Entity와-Dto"><a href="#Entity와-Dto" class="headerlink" title="Entity와 Dto"></a>Entity와 Dto</h3><hr>
+<p>다음과 같은 테이블 Coupon 있다고 하자</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Default Value</th>
+<th>Nullable</th>
+<th>그 외</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>no</td>
+<td>int</td>
+<td></td>
+<td>NO</td>
+<td>Primary Key, Auto Increment</td>
+</tr>
+<tr>
+<td>coupon_no</td>
+<td>varchar</td>
+<td></td>
+<td>NO</td>
+<td>쿠폰번호</td>
+</tr>
+<tr>
+<td>use_date</td>
+<td>timestamp</td>
+<td></td>
+<td>YES</td>
+<td>사용일자</td>
+</tr>
+<tr>
+<td>use_flag</td>
+<td>enum(‘Y’,’N’)</td>
+<td>N</td>
+<td>NO</td>
+<td>사용여부</td>
+</tr>
+<tr>
+<td>discount</td>
+<td>int</td>
+<td>0</td>
+<td>NO</td>
+<td>할인가격</td>
+</tr>
+<tr>
+<td>description</td>
+<td>varchar</td>
+<td></td>
+<td>YES</td>
+<td>쿠폰 설명</td>
+</tr>
+<tr>
+<td>discount_type</td>
+<td>enum(‘P’, ‘W’)</td>
+<td>W</td>
+<td>NO</td>
+<td>할인 방식 (‘P’ : 퍼센티지, ‘W’ : 원)</td>
+</tr>
+<tr>
+<td>create_date</td>
+<td>timestamp</td>
+<td>CURRENT_TIMESTAMP</td>
+<td>NO</td>
+<td>Default Generated 생성 일자</td>
+</tr>
+</tbody></table>
+<p>Entity는 해당 테이블과 매핑하여 사용<br>Dto는 테이블에서 받은 Entity를 다른 layer로 전송할때 사용 (Data Transfer Object)</p>
+<p>entity와 dto는 다음과 같이 만들 수 있다.</p>
+<p>ENTITY</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> entity;<br><br><span class="hljs-keyword">import</span> enums.DiscountType;<br><span class="hljs-keyword">import</span> enums.YorN;<br><span class="hljs-keyword">import</span> lombok.*;<br><span class="hljs-keyword">import</span> org.hibernate.annotations.CreationTimestamp;<br><span class="hljs-keyword">import</span> javax.persistence.*;<br><span class="hljs-keyword">import</span> java.time.LocalDateTime;<br><br><span class="hljs-meta">@ToString</span><br><span class="hljs-meta">@Builder</span><br><span class="hljs-meta">@AllArgsConstructor</span><br><span class="hljs-meta">@NoArgsConstructor</span><br><span class="hljs-meta">@Getter</span><br><span class="hljs-meta">@Setter</span><br><span class="hljs-meta">@Entity</span><br><span class="hljs-meta">@Table(name=&quot;coupon&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Coupon</span> </span>&#123;<br>    <span class="hljs-meta">@Id</span><br>    <span class="hljs-meta">@GeneratedValue(strategy = GenerationType.IDENTITY)</span><br>    <span class="hljs-meta">@Column(name = &quot;no&quot;)</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> no;<br><br>    <span class="hljs-meta">@Column(name = &quot;coupon_no&quot;)</span><br>    <span class="hljs-keyword">private</span> String couponNo;<br><br>    <span class="hljs-meta">@Column(name = &quot;use_date&quot;)</span><br>    <span class="hljs-meta">@Builder</span>.Default<br>    <span class="hljs-keyword">private</span> LocalDateTime useDate = <span class="hljs-keyword">null</span>;<br><br>    <span class="hljs-meta">@Enumerated(EnumType.STRING)</span>    <span class="hljs-comment">// EnumType은 ORDINAL과 STRING이 있음     </span><br>    <span class="hljs-meta">@Builder</span>.Default                <span class="hljs-comment">// Builder로 생성 시 default 값 설정</span><br>    <span class="hljs-meta">@Column(name = &quot;use_flag&quot;)</span><br>    <span class="hljs-keyword">private</span> YorN useFlag = YorN.N; <span class="hljs-comment">// 설정될 default값 (&#x27;N&#x27;)</span><br><br>    <span class="hljs-meta">@Column(name = &quot;discount&quot;)</span><br>    <span class="hljs-meta">@Builder</span>.Default<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> discount = <span class="hljs-number">0</span>;<br><br>    <span class="hljs-meta">@Column(name = &quot;description&quot;, nullable = true)</span><br>    <span class="hljs-keyword">private</span> String description;<br><br>    <span class="hljs-meta">@Enumerated(EnumType.STRING)</span><br>    <span class="hljs-meta">@Column(name = &quot;discount_type&quot;)</span><br>    <span class="hljs-meta">@Builder</span>.Default<br>    <span class="hljs-keyword">private</span> DiscountType discountType = DiscountType.W;<br><br>    <span class="hljs-meta">@CreationTimestamp</span><br>    <span class="hljs-meta">@Column(name= &quot;create_date&quot;, columnDefinition = &quot;TIMESTAMP&quot;)</span><br>    <span class="hljs-keyword">private</span> LocalDateTime createDate;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>DTO</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> dto;<br><br><span class="hljs-keyword">import</span> enums.DiscountType;<br><span class="hljs-keyword">import</span> enums.YorN;<br><span class="hljs-keyword">import</span> entity.Coupon;<br><span class="hljs-keyword">import</span> lombok.*;<br><br><span class="hljs-keyword">import</span> java.time.LocalDateTime;<br><br><span class="hljs-meta">@Getter</span><br><span class="hljs-meta">@Setter</span><br><span class="hljs-meta">@AllArgsConstructor</span><br><span class="hljs-meta">@NoArgsConstructor</span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CouponDto</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> no;<br>    <span class="hljs-keyword">private</span> String couponNo;<br>    <span class="hljs-keyword">private</span> LocalDateTime useDate;<br>    <span class="hljs-keyword">private</span> YorN useFlag;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> discountPrice;<br>    <span class="hljs-keyword">private</span> DiscountType discountType;<br>    <span class="hljs-keyword">private</span> String description;<br>    <span class="hljs-keyword">private</span> LocalDateTime createDate;<br><br>    <span class="hljs-meta">@Builder(builderMethodName = &quot;CouponDtoBuilder&quot;)</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">CouponDto</span><span class="hljs-params">(Coupon coupon)</span></span>&#123;<br>        no = coupon.getNo();<br>        couponNo = coupon.getCouponNo();<br>        useDate = coupon.getUseDate();<br>        useFlag = coupon.getUseFlag();<br>        discountPrice = coupon.getDiscount();<br>        discountType = coupon.getDiscountType();<br>        description = coupon.getDescription();<br>        createDate = coupon.getCreateDate();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>ENUM</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> enums;<br><br><span class="hljs-keyword">import</span> com.fasterxml.jackson.annotation.JsonValue;<br><span class="hljs-keyword">import</span> java.util.Locale;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">enum</span> <span class="hljs-title">DiscountType</span> </span>&#123;<br>    P, W;<br><br>    <span class="hljs-meta">@JsonValue</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getStatus</span><span class="hljs-params">()</span> </span>&#123; <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name().toUpperCase(Locale.ROOT); &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">enum</span> <span class="hljs-title">YorN</span> </span>&#123;<br>    Y, N;<br><br>    <span class="hljs-meta">@JsonValue</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getStatus</span><span class="hljs-params">()</span> </span>&#123; <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.name().toUpperCase(Locale.ROOT); &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>@Enumerated(EnumType)의 경우, ORDINAL과 STRING이 존재</p>
+<ul>
+<li>ORDINAL - P : 1, W : 2 … enum의 순서가 DB에 저장됨</li>
+<li>STRING - P, W … enum의 문자열 값이 DB에 저장됨</li>
+</ul>
+<p>JpaRepository를 상속하는 CouponRepository를 다음과 같이 생성하고</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> repository;<br><br><span class="hljs-keyword">import</span> entity.Coupon;<br><span class="hljs-keyword">import</span> org.springframework.data.jpa.repository.JpaRepository;<br><span class="hljs-keyword">import</span> org.springframework.stereotype.Repository;<br><br><span class="hljs-meta">@Repository</span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">CouponRepository</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">JpaRepository</span>&lt;<span class="hljs-title">Coupon</span>, <span class="hljs-title">Integer</span>&gt; </span>&#123;<br>    <span class="hljs-function">Coupon <span class="hljs-title">findCouponByNo</span><span class="hljs-params">(<span class="hljs-keyword">int</span> no)</span></span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>Service Layer에서는 다음과 같이 DTO로 사용할 수 있다.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> service;<br><br><span class="hljs-keyword">import</span> dto.CouponDto;<br><span class="hljs-keyword">import</span> entity.Coupon;<br><span class="hljs-keyword">import</span> repository.CouponRepository;<br><span class="hljs-keyword">import</span> lombok.RequiredArgsConstructor;<br><span class="hljs-keyword">import</span> org.springframework.stereotype.Service;<br><br><span class="hljs-meta">@Service</span><br><span class="hljs-meta">@RequiredArgsConstructor</span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CouponService</span> </span>&#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> CouponRepository couponRepository;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> CouponDto <span class="hljs-title">getCouponInfoByNo</span><span class="hljs-params">(<span class="hljs-keyword">int</span> no)</span> </span>&#123;<br>        Coupon coupon = couponRepository.findCouponByNo(no);<br><br>        CouponDto couponDto = CouponDto.CouponDtoBuilder().coupon(coupon).build();<br><br>        <span class="hljs-comment">// Do Something</span><br><br>        <span class="hljs-keyword">return</span> couponDto;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/java/">java</a>
+                    
+                      <a class="hover-with-bg" href="/categories/java/springboot/">springboot</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/java/">java</a>
+                    
+                      <a class="hover-with-bg" href="/tags/springboot/">springboot</a>
+                    
+                  </div>
+                
+              </div>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/wiki/intro-to-binary-image/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Intro to Binary Images</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/wiki/restful-api-design/">
+                        <span class="hidden-mobile">RESTful API design.</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'the-masked-developer/the-masked-developer.github.io');
+      s.setAttribute('issue-term', 'title');
+      
+      s.setAttribute('label', 'comment');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+    
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        loader: {
+          load: ['ui/lazy']
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

@@ -1,0 +1,526 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="For Memory">
+  <meta name="author" content="이민혁">
+  <meta name="keywords" content="Dev">
+  <link rel="alternate" href="/atom.xml" title="복면 개발왕" type="application/atom+xml">
+  <meta name="description" content="Supervisorsupervisord 또는 supervisordctl command 는 기본적으로 다음과 같은 경로에서 순서대로 supervisord.conf 을 찾는다.  ..&#x2F;etc&#x2F;supervisord.conf (Relative to the executable) ..&#x2F;supervisord.conf (Relative to the executable)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Supervisord 찍어먹기">
+<meta property="og:url" content="https://the-masked-developer.github.io/wiki/Supervisord/index.html">
+<meta property="og:site_name" content="복면 개발왕">
+<meta property="og:description" content="Supervisorsupervisord 또는 supervisordctl command 는 기본적으로 다음과 같은 경로에서 순서대로 supervisord.conf 을 찾는다.  ..&#x2F;etc&#x2F;supervisord.conf (Relative to the executable) ..&#x2F;supervisord.conf (Relative to the executable)">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://minhyeoky.github.io/posts/supervisor/img/supervisord.conf.png">
+<meta property="article:published_time" content="2021-11-09T14:05:19.000Z">
+<meta property="article:modified_time" content="2022-09-13T06:26:04.097Z">
+<meta property="article:author" content="maskking">
+<meta property="article:tag" content="Dev">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://minhyeoky.github.io/posts/supervisor/img/supervisord.conf.png">
+  
+  <title>Supervisord 찍어먹기 - 복면 개발왕</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"the-masked-developer.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>복면 개발왕</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                메인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                타임라인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                카테고리
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/authors/">
+                <i class="iconfont icon-users"></i>
+                저자
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                태그
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-plan"></i>
+                블로그 역사
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/bg.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Supervisord 찍어먹기">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-author" aria-hidden="true"></i>
+    이민혁
+  </span>
+   
+  <span class="post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2021-11-09 23:05" pubdate>
+      November 9, 2021 pm
+    </time>
+  </span>
+  
+</div>
+
+<div class="mt-1">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-chart"></i>
+    3.4k 글자
+  </span>
+   
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-clock-fill"></i>
+      11 분
+  </span>
+    
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Supervisord 찍어먹기</h1>
+            
+            <div class="markdown-body">
+              <h2 id="Supervisor"><a href="#Supervisor" class="headerlink" title="Supervisor"></a>Supervisor</h2><p>supervisord 또는 supervisordctl command 는 기본적으로 다음과 같은 경로에서 순서대로 <code>supervisord.conf</code> 을 찾는다.</p>
+<ul>
+<li>../etc/supervisord.conf (Relative to the executable)</li>
+<li>../supervisord.conf (Relative to the executable)</li>
+<li>$CWD/supervisord.conf</li>
+<li>$CWD/etc/supervisord.conf</li>
+<li>/etc/supervisord.conf</li>
+<li>/etc/supervisor/supervisord.conf (since Supervisor 3.3.0)</li>
+</ul>
+<p>우선 다음과 같이 예제 어플리케이션을 생성했다.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#!/usr/bin/env python3</span><br><span class="hljs-keyword">from</span> time <span class="hljs-keyword">import</span> sleep<br><br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Starting application...&quot;</span>)<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">5</span>):<br>    sleep(<span class="hljs-number">1</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;[<span class="hljs-subst">&#123;i&#125;</span>] working...&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># docker-compose.yml</span><br><span class="hljs-attr">version:</span> <span class="hljs-string">&quot;3.8&quot;</span><br><br><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">app:</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">python:latest</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;./app.py:/app.py&quot;</span><br>    <span class="hljs-attr">command:</span> <span class="hljs-string">/app.py</span><br></code></pre></td></tr></table></figure>
+
+<p>실행 할 경우.</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs prolog">~/<span class="hljs-symbol">Dropbox</span>/box/demos/supervisord master* ⇣⇡ ❯ dc up<br><span class="hljs-symbol">Starting</span> supervisord_app_1 ... done<br><span class="hljs-symbol">Attaching</span> to supervisord_app_1<br>app_1  | <span class="hljs-symbol">Starting</span> application...<br>app_1  | [<span class="hljs-number">0</span>] working...<br>app_1  | [<span class="hljs-number">1</span>] working...<br>app_1  | [<span class="hljs-number">2</span>] working...<br>app_1  | [<span class="hljs-number">3</span>] working...<br>app_1  | [<span class="hljs-number">4</span>] working...<br>supervisord_app_1 exited with code <span class="hljs-number">0</span><br></code></pre></td></tr></table></figure>
+<p>작업을 마친 후 자동으로 종료된다.</p>
+<p>이제 supervisord.conf 를 생성한다. 파일 형식은 윈도우즈의 <code>ini</code> 로써 각 섹션은 <code>[HEADER]</code> 로 나타내며<br>섹션안에 <code>Key=Value</code> 페어가 들어간다. 공식 홈페이지를 보고 처음부터 한땀한땀 해도 되겠지만 공식 레포의 <a target="_blank" rel="noopener" href="https://github.com/Supervisor/supervisor/blob/master/supervisor/skel/sample.conf">샘플</a> 로 시작하는게 좋을듯 하다.<br>(set filetype=dosini 로 문법 하이라이팅을 켤 수 있다.)</p>
+<p><img src="https://minhyeoky.github.io/posts/supervisor/img/supervisord.conf.png" srcset="/img/loading.gif" lazyload alt="supervisord.conf"></p>
+<ul>
+<li>HTTP 서버를 돌릴게 아니므로, <code>unix_http_server</code> 및 <code>inet_http_server</code> 는 지운다.</li>
+<li><code>supervisord</code> 는 supervisord 프로세스에 대한 설정이므로 냅둔다.</li>
+<li>rpc 또한 해당사항이 없으므로 <code>rpcinterface</code> 도 지운다.</li>
+<li><code>supervisorctl</code> 의 경우 쉘 커맨드 설정을 위함인데, 유저별로 권한을 주는 등 설정할 필요는 없으므로 지운다.</li>
+<li><code>include</code> 는 다른 supervisord.conf 파일을 포함시킬 수 있게 해준다. 지운다.</li>
+<li><code>group</code> 은 program 들을 묶을 수 있게 해준다. 지운다.</li>
+<li><code>eventlistener</code> 는 supervisor’s event system. 로부터 이벤트를 받을 수 있는 프로그램이다. 지운다.</li>
+</ul>
+<p>supervisor 는 python 으로 구현되어 있으므로 pip 로 설치한다. 그러므로 Dockerfile 을 생성하고<br>설치하도록 했다. (버퍼를 꺼줘야 컨테이너 로그가 바로 보인다.)</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">FROM</span> python:latest<br><br><span class="hljs-keyword">ENV</span> PYTHONUNBUFFERED <span class="hljs-number">1</span><br><br><span class="hljs-keyword">RUN</span><span class="bash"> pip install supervisor</span><br></code></pre></td></tr></table></figure>
+
+<p>supervisor.conf 파일을 docker-compose.yml 의 volume 에 추가한다.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">app:</span><br>    <span class="hljs-attr">build:</span> <span class="hljs-string">./</span><br>    <span class="hljs-attr">volumes:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;./app.py:/app.py&quot;</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;./supervisord.conf:/etc/supervisord.conf&quot;</span><br>    <span class="hljs-attr">command:</span> <span class="hljs-string">supervisord</span><br><br></code></pre></td></tr></table></figure>
+<p>이렇게 실행 할 경우 nodaemon 값을 true 로 해줘야한다.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs dosini">[program:app]<br>  command=/app.py              ; the program (relative uses PATH, can take args)<br></code></pre></td></tr></table></figure>
+
+<p>이제 다시 실행할 경우 app 의 로그는 보이지 않지만 정상적으로 종료되었음을 알 수 있다. </p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">app_1</span>  | /usr/lib/python<span class="hljs-number">3</span>/dist-packages/supervisor/options.py:<span class="hljs-number">474</span>: UserWarning: Supervisord is running as root and it is searching for its configuration file in default locations (including its current working directory); you probably want to specify a <span class="hljs-string">&quot;-c&quot;</span> argument specifying an absolute path to a configuration file for improved security.<br><span class="hljs-attribute">app_1</span>  |   self.warnings.warn(<br><span class="hljs-attribute">app_1</span>  | <span class="hljs-number">2021</span>-<span class="hljs-number">09</span>-<span class="hljs-number">01</span> <span class="hljs-number">10</span>:<span class="hljs-number">01</span>:<span class="hljs-number">47</span>,<span class="hljs-number">610</span> CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.<br><span class="hljs-attribute">app_1</span>  | <span class="hljs-number">2021</span>-<span class="hljs-number">09</span>-<span class="hljs-number">01</span> <span class="hljs-number">10</span>:<span class="hljs-number">01</span>:<span class="hljs-number">47</span>,<span class="hljs-number">613</span> INFO supervisord started with pid <span class="hljs-number">1</span><br><span class="hljs-attribute">app_1</span>  | <span class="hljs-number">2021</span>-<span class="hljs-number">09</span>-<span class="hljs-number">01</span> <span class="hljs-number">10</span>:<span class="hljs-number">01</span>:<span class="hljs-number">48</span>,<span class="hljs-number">616</span> INFO spawned: &#x27;app&#x27; with pid <span class="hljs-number">8</span><br><span class="hljs-attribute">app_1</span>  | <span class="hljs-number">2021</span>-<span class="hljs-number">09</span>-<span class="hljs-number">01</span> <span class="hljs-number">10</span>:<span class="hljs-number">01</span>:<span class="hljs-number">49</span>,<span class="hljs-number">707</span> INFO success: app entered RUNNING state, process has stayed up for &gt; than <span class="hljs-number">1</span> seconds (startsecs)<br><span class="hljs-attribute">app_1</span>  | <span class="hljs-number">2021</span>-<span class="hljs-number">09</span>-<span class="hljs-number">01</span> <span class="hljs-number">10</span>:<span class="hljs-number">01</span>:<span class="hljs-number">51</span>,<span class="hljs-number">714</span> INFO exited: app (exit status <span class="hljs-number">0</span>; expected)<br></code></pre></td></tr></table></figure>
+
+<p>로그는 stdout_logfile 을 통해서 std 또는 file 에 쓰면 된다.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs dosini">[supervisord]<br>  stdout_logfile=/dev/stdout        ; stdout log path, NONE for none; default AUTO<br>  stdout_logfile_maxbytes=0   ; max # logfile bytes b4 rotation (default 50MB)<br></code></pre></td></tr></table></figure>
+
+<p>program 의 auturestart 의 기본값은 unexpected 로써 exit code 0 이 아닌 경우 재시작한다. 그러므로<br>app.py 에서 sys.exit(1) 로 비정상 종료 코드를 내보낸다면 supervisord 가 프로세스를 재시작해준다.</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs awk">app_1  | <span class="hljs-number">2021</span>-<span class="hljs-number">09</span>-<span class="hljs-number">01</span> <span class="hljs-number">12</span>:<span class="hljs-number">09</span>:<span class="hljs-number">11</span>,<span class="hljs-number">750</span> INFO spawned: <span class="hljs-string">&#x27;app&#x27;</span> with pid <span class="hljs-number">1819</span><br>app_1  | Starting application...<br>app_1  | [<span class="hljs-number">0</span>] working...<br>^[app_1  | <span class="hljs-number">2021</span>-<span class="hljs-number">09</span>-<span class="hljs-number">01</span> <span class="hljs-number">12</span>:<span class="hljs-number">09</span>:<span class="hljs-number">12</span>,<span class="hljs-number">783</span> INFO success: app entered RUNNING state, process has stayed up <span class="hljs-keyword">for</span> &gt; than <span class="hljs-number">1</span> seconds (startsecs)<br>app_1  | [<span class="hljs-number">1</span>] working...<br>app_1  | [<span class="hljs-number">2</span>] working...<br><br>app_1  | <span class="hljs-number">2021</span>-<span class="hljs-number">09</span>-<span class="hljs-number">01</span> <span class="hljs-number">12</span>:<span class="hljs-number">09</span>:<span class="hljs-number">14</span>,<span class="hljs-number">862</span> INFO exited: app (<span class="hljs-keyword">exit</span> status <span class="hljs-number">1</span>; not expected)<br>app_1  | <span class="hljs-number">2021</span>-<span class="hljs-number">09</span>-<span class="hljs-number">01</span> <span class="hljs-number">12</span>:<span class="hljs-number">09</span>:<span class="hljs-number">15</span>,<span class="hljs-number">869</span> INFO spawned: <span class="hljs-string">&#x27;app&#x27;</span> with pid <span class="hljs-number">1820</span><br></code></pre></td></tr></table></figure>
+
+
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D/">프로그래밍</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/wiki/wellmade-test-writing/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">타입스크립트로 좋은 테스트 작성하기</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/wiki/guide/">
+                        <span class="hidden-mobile">글 작성 가이드</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'the-masked-developer/the-masked-developer.github.io');
+      s.setAttribute('issue-term', 'title');
+      
+      s.setAttribute('label', 'comment');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+    
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

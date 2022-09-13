@@ -1,0 +1,607 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="For Memory">
+  <meta name="author" content="seonjl">
+  <meta name="keywords" content="Dev">
+  <link rel="alternate" href="/atom.xml" title="복면 개발왕" type="application/atom+xml">
+  <meta name="description" content="소개 A module is a class annotated with a @Module() decorator. The @Module() decorator provides metadata that Nest makes use of to organize the application structure. Nest 에서는 @Module() 데코레이터를 이용해 모듈 클래">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NestJS dynamic module 직접 만들어보기">
+<meta property="og:url" content="https://the-masked-developer.github.io/wiki/[nestjs]dynamic-module/index.html">
+<meta property="og:site_name" content="복면 개발왕">
+<meta property="og:description" content="소개 A module is a class annotated with a @Module() decorator. The @Module() decorator provides metadata that Nest makes use of to organize the application structure. Nest 에서는 @Module() 데코레이터를 이용해 모듈 클래">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-11-12T10:00:22.000Z">
+<meta property="article:modified_time" content="2022-09-13T06:26:04.097Z">
+<meta property="article:author" content="maskking">
+<meta property="article:tag" content="nestjs">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>NestJS dynamic module 직접 만들어보기 - 복면 개발왕</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"the-masked-developer.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>복면 개발왕</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                메인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                타임라인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                카테고리
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/authors/">
+                <i class="iconfont icon-users"></i>
+                저자
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                태그
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-plan"></i>
+                블로그 역사
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/bg.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="NestJS dynamic module 직접 만들어보기">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-author" aria-hidden="true"></i>
+    seonjl
+  </span>
+   
+  <span class="post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2021-11-12 19:00" pubdate>
+      November 12, 2021 pm
+    </time>
+  </span>
+  
+</div>
+
+<div class="mt-1">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-chart"></i>
+    10k 글자
+  </span>
+   
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-clock-fill"></i>
+      32 분
+  </span>
+    
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">NestJS dynamic module 직접 만들어보기</h1>
+            
+            <div class="markdown-body">
+              <h3 id="소개"><a href="#소개" class="headerlink" title="소개"></a>소개</h3><hr>
+<p><em>A module is a class annotated with a <code>@Module()</code> decorator. The <code>@Module()</code> decorator provides metadata that <strong>Nest</strong> makes use of to organize the application structure.</em></p>
+<p>Nest 에서는 <code>@Module()</code> 데코레이터를 이용해 모듈 클래스를 생성하고 등록할 수 있다.</p>
+<p>특히 동적 모듈 (Dynamic Module) 기능을 이용해서 Provider 를 동적으로 등록하고 구성 할 수 있는 커스텀 가능한 모듈을 쉽게 만들 수 있다.</p>
+<p>Nestjs에서 공식적으로 지원하는 JwtModule 을 분석해보고, 직접 만들어보는 과정을 정리해보자.</p>
+<h3 id="분석"><a href="#분석" class="headerlink" title="분석"></a>분석</h3><hr>
+<p>먼저 JwtModule 이 어떻게 사용되는지 살펴보겠다.</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs jsx"><span class="hljs-comment">// auth.module.ts</span><br><span class="hljs-comment">// https://github.com/nestjs/nest/blob/master/sample/19-auth-jwt/src/auth/auth.module.ts</span><br><br><span class="hljs-keyword">import</span> &#123; JwtModule &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@nestjs/jwt&#x27;</span>;<br><br>@Module(&#123;<br>  <span class="hljs-attr">imports</span>: [<br>    UsersModule,<br>    PassportModule,<br>    JwtModule.register(&#123;<br>      <span class="hljs-attr">secret</span>: jwtConstants.secret,<br>      <span class="hljs-attr">signOptions</span>: &#123; <span class="hljs-attr">expiresIn</span>: <span class="hljs-string">&#x27;60s&#x27;</span> &#125;,<br>    &#125;),<br>  ],<br>  <span class="hljs-attr">providers</span>: [AuthService, LocalStrategy, JwtStrategy],<br>  <span class="hljs-attr">exports</span>: [AuthService],<br>&#125;)<br><span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AuthModule</span> </span>&#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>NestJS 공식 샘플 코드중 JwtModule 이 등록되는 부분이다.</p>
+<p>module.register(options) 와 같은 형태로 사용할 모듈의 static method 를 옵션과 함께 호출하여<br>동적으로 프로바이더를 생성한다.</p>
+<p>위와 같이 등록해주면 아래와 같이 jwtService 를 이용할 수 있게 된다</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs jsx"><span class="hljs-comment">// auth.service.ts</span><br><span class="hljs-comment">// https://github.com/nestjs/nest/blob/master/sample/19-auth-jwt/src/auth/auth.service.ts</span><br><br><span class="hljs-keyword">import</span> &#123; Injectable &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@nestjs/common&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; UsersService &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../users/users.service&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; JwtService &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@nestjs/jwt&#x27;</span>;<br><br>@Injectable()<br><span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AuthService</span> </span>&#123;<br>  <span class="hljs-function"><span class="hljs-title">constructor</span>(<span class="hljs-params"></span></span><br><span class="hljs-params"><span class="hljs-function">    private readonly usersService: UsersService,</span></span><br><span class="hljs-params"><span class="hljs-function">    private readonly jwtService: JwtService,</span></span><br><span class="hljs-params"><span class="hljs-function">  </span>)</span> &#123;&#125;<br><br>  <span class="hljs-keyword">async</span> validateUser(username: string, <span class="hljs-attr">pass</span>: string): <span class="hljs-built_in">Promise</span>&lt;any&gt; &#123;<br>    <span class="hljs-keyword">const</span> user = <span class="hljs-keyword">await</span> <span class="hljs-built_in">this</span>.usersService.findOne(username);<br>    <span class="hljs-keyword">if</span> (user &amp;&amp; user.password === pass) &#123;<br>      <span class="hljs-keyword">const</span> &#123; password, ...result &#125; = user;<br>      <span class="hljs-keyword">return</span> result;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-title">login</span>(<span class="hljs-params">user: any</span>)</span> &#123;<br>    <span class="hljs-keyword">const</span> payload = &#123; <span class="hljs-attr">username</span>: user.username, <span class="hljs-attr">sub</span>: user.userId &#125;;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">access_token</span>: <span class="hljs-built_in">this</span>.jwtService.sign(payload),<br>    &#125;;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>그럼 이제 JwtModule 이 어떻게 정의되어있는지 살펴보자.</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/nestjs/jwt/tree/master/lib">https://github.com/nestjs/jwt/tree/master/lib</a></p>
+<p>폴더구조는 아래와 같다.</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs jsx">lib<br>	├── interfaces<br>	├── index.ts<br>	├── jwt.constants.ts<br>	├── jwt.module.ts<br>	├── jwt.providers.ts<br>	└── jwt.service.ts<br></code></pre></td></tr></table></figure>
+
+<p>가장 먼저 등록되는 부분을 담당하는 jwt.module.ts 파일을 살펴보자.</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs jsx"><span class="hljs-keyword">import</span> &#123; DynamicModule, Module, Provider &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@nestjs/common&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123;<br>  JwtModuleAsyncOptions,<br>  JwtModuleOptions,<br>  JwtOptionsFactory<br>&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./interfaces/jwt-module-options.interface&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; JWT_MODULE_OPTIONS &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./jwt.constants&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; createJwtProvider &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./jwt.providers&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; JwtService &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./jwt.service&#x27;</span>;<br><br>@Module(&#123;<br>  <span class="hljs-attr">providers</span>: [JwtService],<br>  <span class="hljs-attr">exports</span>: [JwtService]<br>&#125;)<br><span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JwtModule</span> </span>&#123;<br>  <span class="hljs-keyword">static</span> register(options: JwtModuleOptions): DynamicModule &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">module</span>: JwtModule,<br>      <span class="hljs-attr">providers</span>: createJwtProvider(options)<br>    &#125;;<br>  &#125;<br><br>  <span class="hljs-keyword">static</span> registerAsync(options: JwtModuleAsyncOptions): DynamicModule &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">module</span>: JwtModule,<br>      <span class="hljs-attr">imports</span>: options.imports || [],<br>      <span class="hljs-attr">providers</span>: <span class="hljs-built_in">this</span>.createAsyncProviders(options)<br>    &#125;;<br>  &#125;<br><br>  private <span class="hljs-keyword">static</span> createAsyncProviders(<br>    options: JwtModuleAsyncOptions<br>  ): Provider[] &#123;<br>    <span class="hljs-keyword">if</span> (options.useExisting || options.useFactory) &#123;<br>      <span class="hljs-keyword">return</span> [<span class="hljs-built_in">this</span>.createAsyncOptionsProvider(options)];<br>    &#125;<br>    <span class="hljs-keyword">return</span> [<br>      <span class="hljs-built_in">this</span>.createAsyncOptionsProvider(options),<br>      &#123;<br>        <span class="hljs-attr">provide</span>: options.useClass,<br>        <span class="hljs-attr">useClass</span>: options.useClass<br>      &#125;<br>    ];<br>  &#125;<br><br>  private <span class="hljs-keyword">static</span> createAsyncOptionsProvider(<br>    options: JwtModuleAsyncOptions<br>  ): Provider &#123;<br>    <span class="hljs-keyword">if</span> (options.useFactory) &#123;<br>      <span class="hljs-keyword">return</span> &#123;<br>        <span class="hljs-attr">provide</span>: JWT_MODULE_OPTIONS,<br>        <span class="hljs-attr">useFactory</span>: options.useFactory,<br>        <span class="hljs-attr">inject</span>: options.inject || []<br>      &#125;;<br>    &#125;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">provide</span>: JWT_MODULE_OPTIONS,<br>      <span class="hljs-attr">useFactory</span>: <span class="hljs-keyword">async</span> (optionsFactory: JwtOptionsFactory) =&gt;<br>        <span class="hljs-keyword">await</span> optionsFactory.createJwtOptions(),<br>      <span class="hljs-attr">inject</span>: [options.useExisting || options.useClass]<br>    &#125;;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>이 중 NestJS 공식 샘플에서 사용된 register method  와 관련된 부분을 살펴보면 아래와 같다</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs jsx">@Module(&#123;<br>  <span class="hljs-attr">providers</span>: [JwtService],<br>  <span class="hljs-attr">exports</span>: [JwtService]<br>&#125;)<br><span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">JwtModule</span> </span>&#123;<br>	<span class="hljs-keyword">static</span> register(options: JwtModuleOptions): DynamicModule &#123;<br>	    <span class="hljs-keyword">return</span> &#123;<br>	      <span class="hljs-attr">module</span>: JwtModule,<br>	      <span class="hljs-attr">providers</span>: createJwtProvider(options)<br>	    &#125;;<br>	  &#125;<br>&#125;<br>	<br><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createJwtProvider</span>(<span class="hljs-params">options: JwtModuleOptions</span>): <span class="hljs-title">any</span>[] </span>&#123;<br>  <span class="hljs-keyword">return</span> [&#123; <span class="hljs-attr">provide</span>: JWT_MODULE_OPTIONS, <span class="hljs-attr">useValue</span>: options || &#123;&#125; &#125;];<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> JWT_MODULE_OPTIONS = <span class="hljs-string">&#x27;JWT_MODULE_OPTIONS&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p>register 함수는 JwtService 가 provide 되고, export 된 JwtModule 을 사용할 수 있도록<br>NestJS 모듈 객체 형태로 리턴해준다.</p>
+<p>이때 사용자가 입력한 옵션을 파라미터로 받아 동적 프로바이더를 생성해 주기 때문에</p>
+<p>이 모듈을 사용하는 모든 곳에서 같은 암호화 옵션, 비밀키 등을 공유 할 수 있게 해준다.</p>
+<p>또한, registerAsync 라는 다른 등록 구문을 활용해서 useClass, useExisting, useFactory 같은 구문을 이용해 다른 클래스를 추가로 이용하거나, 이미 존재하는 프로바이더를 alias 해서 사용하거나, 비동기적으로 생성 또한 가능하다.</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs jsx"><span class="hljs-keyword">static</span> registerAsync(options: JwtModuleAsyncOptions): DynamicModule &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">module</span>: JwtModule,<br>      <span class="hljs-attr">imports</span>: options.imports || [],<br>      <span class="hljs-attr">providers</span>: <span class="hljs-built_in">this</span>.createAsyncProviders(options)<br>    &#125;;<br>  &#125;<br><br>  private <span class="hljs-keyword">static</span> createAsyncProviders(<br>    options: JwtModuleAsyncOptions<br>  ): Provider[] &#123;<br>    <span class="hljs-keyword">if</span> (options.useExisting || options.useFactory) &#123;<br>      <span class="hljs-keyword">return</span> [<span class="hljs-built_in">this</span>.createAsyncOptionsProvider(options)];<br>    &#125;<br>    <span class="hljs-keyword">return</span> [<br>      <span class="hljs-built_in">this</span>.createAsyncOptionsProvider(options),<br>      &#123;<br>        <span class="hljs-attr">provide</span>: options.useClass,<br>        <span class="hljs-attr">useClass</span>: options.useClass<br>      &#125;<br>    ];<br>  &#125;<br><br>  private <span class="hljs-keyword">static</span> createAsyncOptionsProvider(<br>    options: JwtModuleAsyncOptions<br>  ): Provider &#123;<br>    <span class="hljs-keyword">if</span> (options.useFactory) &#123;<br>      <span class="hljs-keyword">return</span> &#123;<br>        <span class="hljs-attr">provide</span>: JWT_MODULE_OPTIONS,<br>        <span class="hljs-attr">useFactory</span>: options.useFactory,<br>        <span class="hljs-attr">inject</span>: options.inject || []<br>      &#125;;<br>    &#125;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">provide</span>: JWT_MODULE_OPTIONS,<br>      <span class="hljs-attr">useFactory</span>: <span class="hljs-keyword">async</span> (optionsFactory: JwtOptionsFactory) =&gt;<br>        <span class="hljs-keyword">await</span> optionsFactory.createJwtOptions(),<br>      <span class="hljs-attr">inject</span>: [options.useExisting || options.useClass]<br>    &#125;;<br>  &#125;<br></code></pre></td></tr></table></figure>
+
+<p>Dynamic 모듈을 만들기 위한 필요 요건을 정리해보면 아래와 같다.</p>
+<ol>
+<li>모듈을 등록할 수 있는 static register, static registerAsync 메소드가 포함된 모듈 클래스</li>
+<li>모듈에서 제공할 서비스로직이 포함된 주입 가능한 서비스 클래스</li>
+<li>동적으로 넘겨지는 객체를 주입받아 사용할 수 있도록 미리 선언된 상수와 동적 프로바이더 생성 로직</li>
+</ol>
+<h3 id="직접-만들어보기"><a href="#직접-만들어보기" class="headerlink" title="직접 만들어보기"></a>직접 만들어보기</h3><hr>
+<p>NodeJS 에서 기본으로 제공하는 util 라이브러리중 inspect 라는 메소드가 있다.</p>
+<p><a target="_blank" rel="noopener" href="https://nodejs.org/api/util.html#utilinspectobject-options">https://nodejs.org/api/util.html#utilinspectobject-options</a></p>
+<p>이를 래핑하는 동적 모듈을 만들어보자</p>
+<p>The <code>util.inspect()</code> method returns a string representation of <code>object</code> that is intended for debugging. The output of <code>util.inspect</code> may change at any time and should not be depended upon programmatically. Additional <code>options</code> may be passed that alter the result. <code>util.inspect()</code> will use the constructor’s name and/or <code>@@toStringTag</code> to make an identifiable tag for an inspected value.</p>
+<p>이 메소드는 javscript object 디버깅하거나, 읽기 쉽게 변형해서 string 으로 리턴해주는 유틸 메소드다.</p>
+<p>아래 예시처럼 동작한다.</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs jsx"><span class="hljs-keyword">const</span> util = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;util&#x27;</span>);<br><br><span class="hljs-keyword">const</span> o = &#123;<br>  <span class="hljs-attr">a</span>: [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, [[<br>    <span class="hljs-string">&#x27;Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit, sed do &#x27;</span> +<br>      <span class="hljs-string">&#x27;eiusmod \ntempor incididunt ut labore et dolore magna aliqua.&#x27;</span>,<br>    <span class="hljs-string">&#x27;test&#x27;</span>,<br>    <span class="hljs-string">&#x27;foo&#x27;</span>]], <span class="hljs-number">4</span>],<br>  <span class="hljs-attr">b</span>: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>([[<span class="hljs-string">&#x27;za&#x27;</span>, <span class="hljs-number">1</span>], [<span class="hljs-string">&#x27;zb&#x27;</span>, <span class="hljs-string">&#x27;test&#x27;</span>]])<br>&#125;;<br><span class="hljs-built_in">console</span>.log(util.inspect(o, &#123; <span class="hljs-attr">compact</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">depth</span>: <span class="hljs-number">5</span>, <span class="hljs-attr">breakLength</span>: <span class="hljs-number">80</span> &#125;));<br><br><span class="hljs-comment">// &#123; a:</span><br><span class="hljs-comment">//   [ 1,</span><br><span class="hljs-comment">//     2,</span><br><span class="hljs-comment">//     [ [ &#x27;Lorem ipsum dolor sit amet,\nconsectetur [...]&#x27;, // A long line</span><br><span class="hljs-comment">//           &#x27;test&#x27;,</span><br><span class="hljs-comment">//           &#x27;foo&#x27; ] ],</span><br><span class="hljs-comment">//     4 ],</span><br><span class="hljs-comment">//   b: Map(2) &#123; &#x27;za&#x27; =&gt; 1, &#x27;zb&#x27; =&gt; &#x27;test&#x27; &#125; &#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>먼저, 필요 요건들을 만들기 전에 어떻게 등록할지 정의해보자.</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs jsx"><span class="hljs-keyword">import</span> &#123; Module &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@nestjs/common&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; InspectModule &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./inspect/inspect.module&#x27;</span>;<br><br>@Module(&#123;<br>  <span class="hljs-attr">imports</span>: [<br>    UsersModule,<br>    PassportModule,<br>    JwtModule.register(&#123;<br>      <span class="hljs-attr">secret</span>: jwtConstants.secret,<br>      <span class="hljs-attr">signOptions</span>: &#123; <span class="hljs-attr">expiresIn</span>: <span class="hljs-string">&#x27;60s&#x27;</span> &#125;,<br>    &#125;),<br>    InspectModule.register(&#123;<span class="hljs-attr">showHidden</span>: <span class="hljs-literal">false</span>, <span class="hljs-attr">depth</span>: <span class="hljs-literal">null</span>, <span class="hljs-attr">colors</span>: <span class="hljs-literal">true</span>&#125;),<br>  ],<br>  <span class="hljs-attr">providers</span>: [AuthService, LocalStrategy, JwtStrategy],<br>  <span class="hljs-attr">exports</span>: [AuthService],<br>&#125;)<br><span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AuthModule</span> </span>&#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>맨 처음 JwtModule 을 어떻게 등록하는지 살펴 봤던 그 파일이다.<br>JwtModule 아래에 InspectModule을 등록하는 부분을 추가해주었다.</p>
+<p>이제 필요요건들을 하나씩 만들어보자.</p>
+<ul>
+<li>모듈을 등록할 수 있는 static register, static registerAsync 메소드가 포함된 모듈 클래스</li>
+</ul>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs jsx"><span class="hljs-keyword">import</span> &#123; DynamicModule, Module, Provider &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@nestjs/common&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; INSPECT_MODULE_OPTION &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./inspect.constants&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; InspectAsyncOptions, InspectOptions, InspectOptionsFactory &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./inspect.interfaces&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; createInspectProviders &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./inspect.providers&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; InspectService &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./inspect.service&#x27;</span>;<br><br>@Module(&#123;<br>  <span class="hljs-attr">providers</span>: [InspectService],<br>  <span class="hljs-attr">exports</span>: [InspectService]<br>&#125;)<br><span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">InspectModule</span> </span>&#123;<br>  public <span class="hljs-keyword">static</span> register(options: InspectOptions): DynamicModule &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">module</span>: InspectModule,<br>      <span class="hljs-attr">providers</span>: createInspectProviders(options),<br>    &#125;;<br>  &#125;<br><br>  <span class="hljs-keyword">static</span> registerAsync(options: InspectAsyncOptions): DynamicModule &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">module</span>: InspectModule,<br>      <span class="hljs-attr">imports</span>: options.imports || [],<br>      <span class="hljs-attr">providers</span>: <span class="hljs-built_in">this</span>.createAsyncProviders(options)<br>    &#125;;<br>  &#125;<br><br>  private <span class="hljs-keyword">static</span> createAsyncProviders(<br>    options: InspectAsyncOptions<br>  ): Provider[] &#123;<br>    <span class="hljs-keyword">if</span> (options.useExisting || options.useFactory) &#123;<br>      <span class="hljs-keyword">return</span> [<span class="hljs-built_in">this</span>.createAsyncOptionsProvider(options)];<br>    &#125;<br>    <span class="hljs-keyword">return</span> [<br>      <span class="hljs-built_in">this</span>.createAsyncOptionsProvider(options),<br>      &#123;<br>        <span class="hljs-attr">provide</span>: options.useClass,<br>        <span class="hljs-attr">useClass</span>: options.useClass<br>      &#125;<br>    ];<br>  &#125;<br><br>  private <span class="hljs-keyword">static</span> createAsyncOptionsProvider(<br>    options: InspectAsyncOptions<br>  ): Provider &#123;<br>    <span class="hljs-keyword">if</span> (options.useFactory) &#123;<br>      <span class="hljs-keyword">return</span> &#123;<br>        <span class="hljs-attr">provide</span>: INSPECT_MODULE_OPTION,<br>        <span class="hljs-attr">useFactory</span>: options.useFactory,<br>        <span class="hljs-attr">inject</span>: options.inject || []<br>      &#125;;<br>    &#125;<br>    <span class="hljs-keyword">return</span> &#123;<br>      <span class="hljs-attr">provide</span>: INSPECT_MODULE_OPTION,<br>      <span class="hljs-attr">useFactory</span>: <span class="hljs-keyword">async</span> (optionsFactory: InspectOptionsFactory) =&gt;<br>        <span class="hljs-keyword">await</span> optionsFactory.createInspectOptions(),<br>      <span class="hljs-attr">inject</span>: [options.useExisting || options.useClass]<br>    &#125;;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>모듈에서 제공할 서비스로직이 포함된 주입 가능한 서비스 클래스</li>
+</ul>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs jsx"><span class="hljs-keyword">import</span> &#123; Inject, Injectable &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@nestjs/common&#x27;</span>;<br><span class="hljs-keyword">import</span> util, &#123; InspectOptions &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;util&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; INSPECT_MODULE_OPTION &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./inspect.constants&#x27;</span>;<br><br>@Injectable()<br><span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">InspectService</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-title">constructor</span>(<span class="hljs-params">@Inject(INSPECT_MODULE_OPTION) private readonly options: InspectOptions</span>)</span> &#123;&#125;<br><br>    inspect(object: any): string &#123;<br>        <span class="hljs-keyword">return</span> util.inspect(object, <span class="hljs-built_in">this</span>.options)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>동적으로 넘겨지는 객체를 주입받아 사용할 수 있도록 미리 선언된 상수와 동적 프로바이더 생성 로직</li>
+</ul>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs jsx"><span class="hljs-keyword">import</span> &#123; Provider &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@nestjs/common&quot;</span>;<br><span class="hljs-keyword">import</span> &#123; INSPECT_MODULE_OPTION &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./inspect.constants&quot;</span>;<br><span class="hljs-keyword">import</span> &#123; InspectOptions &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./inspect.interfaces&quot;</span>;<br><br><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createInspectProviders</span>(<span class="hljs-params">options: InspectOptions</span>): <span class="hljs-title">Provider</span>[] </span>&#123;<br>    <span class="hljs-keyword">return</span> [<br>      &#123;<br>        <span class="hljs-attr">provide</span>: INSPECT_MODULE_OPTION,<br>        <span class="hljs-attr">useValue</span>: options || &#123;&#125;,<br>      &#125;,<br>    ];<br>  &#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs jsx"><span class="hljs-keyword">import</span> &#123; ModuleMetadata, Type &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@nestjs/common&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; InspectOptions &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;util&#x27;</span>;<br><br><span class="hljs-keyword">const</span> INSPECT_MODULE_OPTION = <span class="hljs-string">&quot;INSPECT_MODULE_OPTION&quot;</span><br><br><span class="hljs-keyword">export</span> &#123; INSPECT_MODULE_OPTION &#125;<br></code></pre></td></tr></table></figure>
+
+<p>sample src : <a target="_blank" rel="noopener" href="https://github.com/seonjl/nestjs-inspect/tree/main/sample">https://github.com/seonjl/nestjs-inspect/tree/main/sample</a></p>
+<p>참고한 레퍼런스 </p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://dev.to/nestjs/advanced-nestjs-how-to-build-completely-dynamic-nestjs-modules-1370">https://dev.to/nestjs/advanced-nestjs-how-to-build-completely-dynamic-nestjs-modules-1370</a></li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/nodejs/">nodejs</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/nestjs/">nestjs</a>
+                    
+                  </div>
+                
+              </div>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/wiki/struct-obj-1-poly/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">자료구조와 객체 (1) - 추상화와 다형성</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/wiki/wellmade-test-writing/">
+                        <span class="hidden-mobile">타입스크립트로 좋은 테스트 작성하기</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'the-masked-developer/the-masked-developer.github.io');
+      s.setAttribute('issue-term', 'title');
+      
+      s.setAttribute('label', 'comment');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+    
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+  
+
+  
+    <!-- MathJax -->
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        loader: {
+          load: ['ui/lazy']
+        },
+        options: {
+          renderActions: {
+            findScript: [10, doc => {
+              document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = { node: text, delim: '', n: 0 };
+                math.end = { node: text, delim: '', n: 0 };
+                doc.math.push(math);
+              });
+            }, '', false],
+            insertedScript: [200, () => {
+              document.querySelectorAll('mjx-container').forEach(node => {
+                let target = node.parentNode;
+                if (target.nodeName.toLowerCase() === 'li') {
+                  target.parentNode.classList.add('has-jax');
+                }
+              });
+            }, '', false]
+          }
+        }
+      };
+    </script>
+
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" ></script>
+
+  
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js" ></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({"theme":"default"});
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

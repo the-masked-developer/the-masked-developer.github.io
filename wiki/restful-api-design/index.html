@@ -1,0 +1,569 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="For Memory">
+  <meta name="author" content="maskking">
+  <meta name="keywords" content="Dev">
+  <link rel="alternate" href="/atom.xml" title="복면 개발왕" type="application/atom+xml">
+  <meta name="description" content="RESTful API design’s Goals. Platform indenpendency. Self-evolution.   굳이 HTTP 일 필요는 없다. design 의 문제.  Design Principles. Resource 를 중심으로 설계된다.  Resource 는 고유의 identifier 를 가진다.   Representation 을 가진다.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RESTful API design.">
+<meta property="og:url" content="https://the-masked-developer.github.io/wiki/restful-api-design/index.html">
+<meta property="og:site_name" content="복면 개발왕">
+<meta property="og:description" content="RESTful API design’s Goals. Platform indenpendency. Self-evolution.   굳이 HTTP 일 필요는 없다. design 의 문제.  Design Principles. Resource 를 중심으로 설계된다.  Resource 는 고유의 identifier 를 가진다.   Representation 을 가진다.">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-12-02T05:11:45.000Z">
+<meta property="article:modified_time" content="2022-09-13T06:26:04.097Z">
+<meta property="article:author" content="maskking">
+<meta property="article:tag" content="Dev">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>RESTful API design. - 복면 개발왕</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"the-masked-developer.github.io","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>복면 개발왕</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                메인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                타임라인
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                카테고리
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/authors/">
+                <i class="iconfont icon-users"></i>
+                저자
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                태그
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-plan"></i>
+                블로그 역사
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/bg.jpeg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="RESTful API design.">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-author" aria-hidden="true"></i>
+    maskking
+  </span>
+   
+  <span class="post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2021-12-02 14:11" pubdate>
+      December 2, 2021 pm
+    </time>
+  </span>
+  
+</div>
+
+<div class="mt-1">
+  
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-chart"></i>
+    1.8k 글자
+  </span>
+   
+  <span class="post-meta mr-2">
+    <i class="iconfont icon-clock-fill"></i>
+      6 분
+  </span>
+    
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">RESTful API design.</h1>
+            
+            <div class="markdown-body">
+              <h2 id="RESTful-API-design’s-Goals"><a href="#RESTful-API-design’s-Goals" class="headerlink" title="RESTful API design’s Goals."></a>RESTful API design’s Goals.</h2><ol>
+<li>Platform indenpendency.</li>
+<li>Self-evolution.</li>
+</ol>
+<blockquote>
+<p>굳이 HTTP 일 필요는 없다. design 의 문제.</p>
+</blockquote>
+<h2 id="Design-Principles"><a href="#Design-Principles" class="headerlink" title="Design Principles."></a>Design Principles.</h2><ol>
+<li>Resource 를 중심으로 설계된다. <ul>
+<li>Resource 는 고유의 identifier 를 가진다.</li>
+</ul>
+</li>
+<li>Representation 을 가진다. 보통 JSON.</li>
+<li>각 Request 는 Stateless, Atomic, Indenpendent 하다. <ul>
+<li>Server 의 scale out 을 가능케 한다.</li>
+<li>Indenpendent 하기 때문에 요청의 순서에 신경쓰지 않아도 된다.</li>
+</ul>
+</li>
+</ol>
+<h2 id="Maturity-of-RESTful-HTTP-API"><a href="#Maturity-of-RESTful-HTTP-API" class="headerlink" title="Maturity of RESTful HTTP API."></a>Maturity of RESTful HTTP API.</h2><ol>
+<li>POST only.</li>
+<li>Resource + URI 분리</li>
+<li>Resource + HTTP methods.</li>
+<li>HATEOAS (+hyperlinks)</li>
+</ol>
+<blockquote>
+<p>보통, 대부분의 RESTful HTTP API 는 2 ~ 3 그 어딘가에 있다.</p>
+</blockquote>
+<h2 id="Design-guide"><a href="#Design-guide" class="headerlink" title="Design guide."></a>Design guide.</h2><ol>
+<li>No verbs. (Use methods for it!)</li>
+<li>There’s no need to match with database schema. (just abstract it. hide implementation.)</li>
+<li>resource 의 collection 들은 다른 URI 를 가진다. <ul>
+<li>ex) <code>/orders</code></li>
+</ul>
+</li>
+<li>Resource 의 relationship 은 hierachy 하게 표현한다. <ul>
+<li>ex) <code>/customers/&#123;customer_id&#125;/orders/&#123;order_id&#125;</code>…</li>
+<li>관계가 너무 많으면 관리가 힘들다. 그러므로 여러번 요청을 날린다던지 너무 계층이 많아지지 않도록 조심한다.</li>
+</ul>
+</li>
+<li>chatty 한 API design 보다는, 하나의 큰 load 를 가진 API 가 낫다. (denormalized API is better) <ul>
+<li>지나친 Overfetching 은 조심해야 한다.</li>
+</ul>
+</li>
+<li>Abstract database schema. do not expose it.</li>
+<li>Resource 와 관련없는 서버의 function, procedure 를 실행해야 할 경우도 있다. 적당히 사용한다.</li>
+</ol>
+<h3 id="HTTP-methods"><a href="#HTTP-methods" class="headerlink" title="HTTP methods."></a>HTTP methods.</h3><ol>
+<li><code>GET</code>: Resource’s representation. <ul>
+<li><code>200</code></li>
+<li><code>404</code></li>
+</ul>
+</li>
+<li><code>POST</code>: Resource’s creation or call server’s function. <ul>
+<li><code>201</code>: creation success.</li>
+<li><code>200</code>: no creation.</li>
+<li><code>400</code>: bad representation.</li>
+<li>생성시 <code>Location</code> Header 에 resource 의 ID 를 담아서 리턴한다.</li>
+</ul>
+</li>
+<li><code>PUT</code>: Create or update resource (w/ complete representation) <ul>
+<li><code>201</code>, <code>200</code>, <code>400</code></li>
+<li><code>409</code>(Conflict): Valid 한 요청이지만, Server 의 state 로 인해 update 를 실패했다.</li>
+<li>생성의 경우 Client 가 적절하게 좋은 ID 를 생성할 수 있어야 한다.</li>
+</ul>
+</li>
+<li><code>PATCH</code>: Update resource partially <ul>
+<li><code>200</code>, <code>400</code>, <code>409</code> </li>
+<li>Representation fields are optional.</li>
+<li><code>null</code> means delete the field’s value.</li>
+</ul>
+</li>
+<li><code>DELETE</code>: Delete resource. <ul>
+<li><code>204</code>(No Content): success</li>
+</ul>
+</li>
+</ol>
+<h3 id="Filter-and-Pagination"><a href="#Filter-and-Pagination" class="headerlink" title="Filter and Pagination"></a>Filter and Pagination</h3><p>TBW. <a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design#filter-and-paginate-data">https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design#filter-and-paginate-data</a></p>
+<h3 id="Versioning"><a href="#Versioning" class="headerlink" title="Versioning"></a>Versioning</h3><ol>
+<li>No versioning. acceptable for internal APIs.</li>
+<li>Header versioning. <ul>
+<li>ex) <code>App-Version: ...</code></li>
+</ul>
+</li>
+<li>Query string versioning. <ul>
+<li>ex) <code>/...?version=1</code></li>
+</ul>
+</li>
+<li>URI versiong. <ul>
+<li>ex) <code>/v1/...</code>.</li>
+</ul>
+</li>
+<li>media type versioning.</li>
+</ol>
+<h2 id="Open-API"><a href="#Open-API" class="headerlink" title="Open API"></a>Open API</h2><p>TBW. <a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design#open-api-initiative">https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design#open-api-initiative</a></p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/azure/architecture/best-practices/api-design">Microsoft RESTful API best practices</a></li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+              </div>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/wiki/%5Bspringboot%5Djpa-dto-basic/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">업무시간에 몰래 작성해보는 springboot jpa entity와 dto</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/wiki/distributed-programming-in-pytorch/">
+                        <span class="hidden-mobile">Distributed Programming in PyTorch</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'the-masked-developer/the-masked-developer.github.io');
+      s.setAttribute('issue-term', 'title');
+      
+      s.setAttribute('label', 'comment');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+    
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
